@@ -58,7 +58,7 @@ def monkey_rng(module, seed=None):
         print("skipping getrandbits")
 
     return wrapper
-    
+
 
 def test_mt19937():
     import mt19937
