@@ -31,7 +31,7 @@ clean:
 	$(CC)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
 %.so:	%.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o -I. -L. $@ $<
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 %.s:	%.c
 	$(CC)  -S  $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
