@@ -2,7 +2,7 @@
 
 import sys
 from math import sqrt
-
+import time
 
 #test fuctions borrowed from standard random module
 def _test_generator(n, func, args):
@@ -60,11 +60,27 @@ def monkey_rng(module, seed=None):
     return wrapper
 
 
-def test_mt19937():
-    import mt19937
-    print(mt19937.__doc__)
-    rng = monkey_rng(mt19937, 1)
-    _test(rng, 1000)
+def test_variants(module, N=10000):
+    m = __import__(module)
+    rng = monkey_rng(m, 1)
+    start = time.time()
+    _test(r)
+    elapsed = time.time() - start
+    print("Module %s took %s seconds" % (module, elapsed))
+
+def test_sum(module, N=1000000):
+    m = __import__(module)
+    r = m.Random(2).random
+    start = time.time()
+    total = sum(r() for x in range(N))
+    elapsed = time.time() - start
+    #print(m.__doc__)
+    print("Module %s\nTotal %s\n seconds %s" %
+          (module, total, elapsed))
 
 
-test_mt19937()
+
+test_sum('random')
+test_sum('mt19937')
+
+

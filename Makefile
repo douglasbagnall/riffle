@@ -10,7 +10,7 @@
 #
 # It may be distributed under the same terms as Python itself.
 
-all::	mt19937module.so
+all::
 
 
 GDB_ALWAYS_FLAGS = -g
@@ -22,7 +22,7 @@ PYTHON = python$(PY_VERSION)
 PY_FLAGS =  -pthread -c  -DNDEBUG  -fwrapv -Wstrict-prototypes  -I/usr/include/$(PYTHON) -fPIC
 #-DPy_BUILD_CORE
 
-ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS)
+ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
 
 clean:
 	rm -f *.so *.o *.a *.d *.s *.i
@@ -31,7 +31,7 @@ clean:
 	$(CC)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
 %.so:	%.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $<
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o -I. -L. $@ $<
 
 %.s:	%.c
 	$(CC)  -S  $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
@@ -43,4 +43,6 @@ clean:
 
 debug:
 	make -B CFLAGS='-g -fno-inline -fno-inline-functions -fno-omit-frame-pointer -O0'
+
+all::	mt19937module.so
 
