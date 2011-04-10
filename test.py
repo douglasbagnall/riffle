@@ -82,5 +82,6 @@ def test_sum(module, N=1000000):
 
 test_sum('random')
 test_sum('mt19937')
+test_sum('dSFMT')
 
 

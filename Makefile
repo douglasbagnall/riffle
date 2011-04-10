@@ -25,7 +25,7 @@ PY_FLAGS =  -pthread -c  -DNDEBUG  -fwrapv -Wstrict-prototypes  -I/usr/include/$
 ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
 
 clean:
-	rm -f *.so *.o *.a *.d *.s *.i
+	rm -f *.so *.[oadsi] dSFMT/*.[do]
 
 .c.o:
 	$(CC)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
@@ -45,4 +45,12 @@ debug:
 	make -B CFLAGS='-g -fno-inline -fno-inline-functions -fno-omit-frame-pointer -O0'
 
 all::	mt19937module.so
+all::	dSFMT.so
 
+DSFMT_FLAGS =  -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800  -Wmissing-prototypes  -std=c99
+
+dSFMT/dSFMT.o: dSFMT/dSFMT.c
+	$(CC)  $(DSFMT_FLAGS)  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+dSFMT.so: dSFMT/dSFMT.o dSFMT.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
