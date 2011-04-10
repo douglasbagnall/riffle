@@ -95,5 +95,6 @@ test_sum('mt19937')
 test_sum('dSFMT')
 test_sum('lcg')
 test_sum('dummy')
+test_sum('dummyc')
 
 

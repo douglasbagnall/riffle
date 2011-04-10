@@ -13,6 +13,18 @@
     {NULL,              NULL}           /* sentinel */\
 }
 
+#define RANDOM_METHODS_STRUCT_NO_GETRANDBITS() static PyMethodDef random_methods[] = {	\
+    {"random",          (PyCFunction)random_random,  METH_NOARGS,\
+        PyDoc_STR("random() -> x in the interval [0, 1).")},\
+    {"seed",            (PyCFunction)random_seed,  METH_VARARGS,\
+        PyDoc_STR("seed([n]) -> None.  Defaults to current time.")},\
+    {"getstate",        (PyCFunction)random_getstate,  METH_NOARGS,\
+        PyDoc_STR("getstate() -> tuple containing the current state.")},\
+    {"setstate",          (PyCFunction)random_setstate,  METH_O,\
+        PyDoc_STR("setstate(state) -> None.  Restores generator state.")},\
+    {NULL,              NULL}           /* sentinel */\
+}
+
 #define RANDOM_CLASS_DOC(name) PyDoc_STRVAR(random_doc,			\
 				       "Random() -> create a random number generator with its own internal state; uses " #name)
 
