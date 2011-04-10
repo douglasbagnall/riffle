@@ -46,6 +46,7 @@ debug:
 
 all::	mt19937module.so
 all::	dSFMT.so
+all::	lcg.so
 
 DSFMT_FLAGS =  -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800  -Wmissing-prototypes  -std=c99
 
