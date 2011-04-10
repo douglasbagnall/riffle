@@ -14,11 +14,11 @@
 }
 
 #define RANDOM_CLASS_DOC(name) PyDoc_STRVAR(random_doc,			\
-				       "Random() -> create a random number generator with its own internal state; uses " name)
+				       "Random() -> create a random number generator with its own internal state; uses " #name)
 
 #define RANDOM_OBJECT_STRUCT(name) static PyTypeObject Random_Type = {	\
     PyVarObject_HEAD_INIT(NULL, 0)                               \
-    name ".Random",                   /*tp_name*/		 \
+    #name ".Random",                   /*tp_name*/		 \
     sizeof(RandomObject),               /*tp_basicsize*/       \
     0,                                  /*tp_itemsize*/       \
     /* methods */       \
@@ -60,12 +60,12 @@
     0,                                  /*tp_is_gc*/       \
 }
 
-#define RANDOM_MODULE_DOC(name) PyDoc_STRVAR(module_doc, "Random numbers using " name);
+#define RANDOM_MODULE_DOC(name) PyDoc_STRVAR(module_doc, "Random numbers using " #name);
 
 #define RANDOM_MODULE_STRUCT(name)      \
 static struct PyModuleDef randommodule = {\
     PyModuleDef_HEAD_INIT,\
-    name,    \
+    #name,    \
     module_doc,\
     -1,\
     NULL,\
@@ -75,8 +75,8 @@ static struct PyModuleDef randommodule = {\
     NULL\
 }
 
-#define RANDOM_MODULE_INIT() PyMODINIT_FUNC	\
-PyInit_dSFMT(void) \
+#define RANDOM_MODULE_INIT(name) PyMODINIT_FUNC	\
+PyInit_ ## name  (void) \
 { \
     PyObject *m;\
     if (PyType_Ready(&Random_Type) < 0) \
@@ -88,3 +88,6 @@ PyInit_dSFMT(void) \
     PyModule_AddObject(m, "Random", (PyObject *)&Random_Type);\
     return m;\
 }
+
+/*workaround for CPP expansion oddities*/
+#define RANDOM_MODULE_INIT2(name) RANDOM_MODULE_INIT(name)

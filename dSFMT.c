@@ -13,7 +13,7 @@
 #include "dSFMT/dSFMT.h"
 #include "random_helpers.h"
 
-#define MODULE_NAME "dSFMT"
+#define MODULE_NAME dSFMT
 
 #define N 624
 typedef struct {
@@ -242,4 +242,4 @@ RANDOM_MODULE_DOC(MODULE_NAME);
 
 RANDOM_MODULE_STRUCT(MODULE_NAME);
 
-RANDOM_MODULE_INIT();
+RANDOM_MODULE_INIT2(MODULE_NAME)
