@@ -68,15 +68,25 @@ def test_variants(module, N=10000):
     elapsed = time.time() - start
     print("Module %s took %s seconds" % (module, elapsed))
 
-def test_sum(module, N=1000000):
+def test_sum(module, N=1000000, cycles=3):
     m = __import__(module)
-    r = m.Random(2).random
-    start = time.time()
-    total = sum(r() for x in range(N))
-    elapsed = time.time() - start
+    best = 1e999
+    old_total = None
+    rng = m.Random()
+    r = rng.random
+    for cycle in range(cycles):
+        rng.seed(2)
+        start = time.time()
+        total = sum(r() for x in range(N))
+        elapsed = time.time() - start
+        if elapsed < best:
+            best = elapsed
+        if old_total and old_total != total:
+            print("Mismatch in totals was %s, now %s" %(old_total, total))
+
     #print(m.__doc__)
-    print("Module %s\nTotal %s\n seconds %s" %
-          (module, total, elapsed))
+    print("Module %s (best of %s)\n Total %s\n seconds %s" %
+          (module, cycles, total, best))
 
 
 
