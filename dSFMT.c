@@ -15,7 +15,6 @@
 
 #define MODULE_NAME dSFMT
 
-#define N 624
 typedef struct {
     PyObject_HEAD
     dsfmt_t dsfmt;
@@ -37,7 +36,7 @@ random_random(RandomObject *self)
     return PyFloat_FromDouble(a);
 }
 
-/* initializes mt[N] with a seed */
+/* initialize using an integer seed */
 static void
 init_genrand(RandomObject *self, unsigned long s)
 {
