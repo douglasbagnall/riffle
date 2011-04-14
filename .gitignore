@@ -7,3 +7,5 @@
 *.d
 .emacs*
 junk/
+estream/
+sha3/
