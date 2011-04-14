@@ -1,3 +1,56 @@
+//#include "Python.h"
+
+#ifndef INVISIBLE
+#define INVISIBLE __attribute__ ((visibility("hidden")))
+#else
+#warning INVISIBLE is set
+#endif
+#ifndef UNUSED
+#define UNUSED __attribute__ ((unused))
+#else
+#warning UNUSED is set
+#endif
+
+typedef uint64_t u64;
+typedef uint32_t u32;
+typedef uint16_t u16;
+typedef uint8_t u8;
+
+typedef int64_t s64;
+typedef int32_t s32;
+typedef int16_t s16;
+typedef int8_t s8;
+
+
+#define debug(format, ...) fprintf (stderr, (format),## __VA_ARGS__); fflush(stderr)
+
+#include "sha1.h"
+
+/* Initialise a range of memory to a pseudo random state, using sha1 in a kind
+   of CTR mode.  This is used for initialising various generators.*/
+
+UNUSED static void
+initialise_state(u8 *output, size_t outlen, u8 *input, size_t inlen){
+    moz_SHA_CTX ctx;
+    unsigned char hashout[20];
+    size_t remaining = outlen;
+    u32 ctr = 0;
+    moz_SHA1_Init(&ctx);
+    for(;;){
+	moz_SHA1_Update(&ctx, input, inlen);
+	moz_SHA1_Update(&ctx, &ctr, sizeof(u32));
+	moz_SHA1_Final(hashout, &ctx);
+	if (remaining < 20){
+	    memcpy(output, hashout, remaining);
+	    return;
+	}
+	memcpy(output, hashout, 20);
+	output += 20;
+	remaining -= 20;
+    }
+}
+
+
 #define RANDOM_METHODS_STRUCT() static PyMethodDef random_methods[] = {	\
     {"random",          (PyCFunction)random_random,  METH_NOARGS,\
         PyDoc_STR("random() -> x in the interval [0, 1).")},\
