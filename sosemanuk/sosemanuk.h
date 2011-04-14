@@ -25,7 +25,7 @@
  * This macro enables the ECRYPT API, and disables the local API.
  * It is defined by default, for ECRYPT processing.
  */
-#define SOSEMANUK_ECRYPT
+//#define SOSEMANUK_ECRYPT
 
 #ifdef SOSEMANUK_ECRYPT
 
