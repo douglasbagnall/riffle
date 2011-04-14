@@ -68,7 +68,7 @@ def test_variants(module, N=10000):
     elapsed = time.time() - start
     print("Module %s took %s seconds" % (module, elapsed))
 
-def test_sum(module, N=1000000, cycles=3):
+def test_sum(module, N=1000000, cycles=5):
     m = __import__(module)
     best = 1e999
     old_total = None
@@ -88,6 +88,24 @@ def test_sum(module, N=1000000, cycles=3):
     print("Module %s (sum of %s, best of %s runs)\n Total %10.4f    seconds %10.4f" %
           (module, N, cycles, total, best))
 
+def test_list(module, N=10000000, cycles=5):
+    m = __import__(module)
+    best = 1e999
+    old_total = None
+    rng = m.Random()
+    r = rng.random
+    for cycle in range(cycles):
+        rng.seed(2)
+        start = time.time()
+        #x = [r() for x in range(N)]
+        for x in range(N):
+            r()
+        elapsed = time.time() - start
+        if elapsed < best:
+            best = elapsed
+    print("Module %-12s (best of %s runs, %s cycles) %10.4f seconds" %
+          (module, N, cycles, best))
+
 
 def test_print(module, N=1000):
     m = __import__(module)
@@ -102,14 +120,16 @@ def test_print(module, N=1000):
 #test_print('sosemanuk')
 #sys.exit()
 
-test_sum('isaac')
-test_sum('isaac64')
-test_sum('sosemanuk')
-#test_sum('random')
-test_sum('mt19937')
-test_sum('dSFMT')
-test_sum('lcg')
-test_sum('dummy')
-test_sum('dummyc')
-#test_sum('urandom')
+test = test_list
+
+test('isaac')
+test('isaac64')
+test('sosemanuk')
+test('random')
+test('mt19937')
+test('dSFMT')
+test('lcg')
+test('dummy')
+test('dummyc')
+#test('urandom')
 
