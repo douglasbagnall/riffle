@@ -35,8 +35,12 @@ static PyTypeObject Random_Type;
 static PyObject *
 random_random(RandomObject *self)
 {
-    double d =  isaac64_next_double(&self->context);
-    return PyFloat_FromDouble(d);
+    //double d =  isaac64_next_double(&self->context);
+    u64 x = isaac64_next_uint64(&self->context);
+    x &= DSFMT_LOW_MASK;
+    x|= DSFMT_HIGH_CONST;
+    double d = *(double *) &x;
+    return PyFloat_FromDouble(d - 1.0);
 }
 
 /*
