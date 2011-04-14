@@ -85,10 +85,22 @@ def test_sum(module, N=1000000, cycles=3):
             print("Mismatch in totals was %s, now %s" %(old_total, total))
 
     #print(m.__doc__)
-    print("Module %s (best of %s)\n Total %s\n seconds %s" %
-          (module, cycles, total, best))
+    print("Module %s (sum of %s, best of %s runs)\n Total %10.4f    seconds %10.4f" %
+          (module, N, cycles, total, best))
 
 
+def test_print(module, N=1000):
+    m = __import__(module)
+    rng = m.Random()
+    r = rng.random
+    rng.seed(2)
+    for x in range(N):
+        print (r(), end=' ')
+    print()
+
+
+#test_print('sosemanuk')
+#sys.exit()
 
 test_sum('sosemanuk')
 test_sum('random')
@@ -97,6 +109,6 @@ test_sum('dSFMT')
 test_sum('lcg')
 test_sum('dummy')
 test_sum('dummyc')
-test_sum('urandom')
+#test_sum('urandom')
 
 
