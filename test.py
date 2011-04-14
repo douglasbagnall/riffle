@@ -102,13 +102,14 @@ def test_print(module, N=1000):
 #test_print('sosemanuk')
 #sys.exit()
 
+test_sum('isaac')
+test_sum('isaac64')
 test_sum('sosemanuk')
-test_sum('random')
+#test_sum('random')
 test_sum('mt19937')
 test_sum('dSFMT')
 test_sum('lcg')
 test_sum('dummy')
 test_sum('dummyc')
 #test_sum('urandom')
-
 

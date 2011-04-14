@@ -63,6 +63,11 @@ sosemanuk/sosemanuk.o: sosemanuk/sosemanuk.c
 sosemanuk.so: sosemanuk.o sosemanuk/sosemanuk.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+isaac64.so: isaac64.o sha1.o ccan/isaac/isaac64.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+isaac.so: isaac.o sha1.o ccan/isaac/isaac.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 config.h:
 	$(CC) ccan/configurator.c -o ccan/configurator
