@@ -90,6 +90,7 @@ def test_sum(module, N=1000000, cycles=3):
 
 
 
+test_sum('sosemanuk')
 test_sum('random')
 test_sum('mt19937')
 test_sum('dSFMT')

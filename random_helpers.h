@@ -21,6 +21,9 @@ typedef int32_t s32;
 typedef int16_t s16;
 typedef int8_t s8;
 
+#define DSFMT_LOW_MASK  UINT64_C(0x000FFFFFFFFFFFFF)
+#define DSFMT_HIGH_CONST UINT64_C(0x3FF0000000000000)
+#define DSFMT_SR	12
 
 #define debug(format, ...) fprintf (stderr, (format),## __VA_ARGS__); fflush(stderr)
 
