@@ -88,7 +88,7 @@ def test_sum(module, N=1000000, cycles=5):
     print("Module %s (sum of %s, best of %s runs)\n Total %10.4f    seconds %10.4f" %
           (module, N, cycles, total, best))
 
-def test_list(module, N=10000000, cycles=5):
+def test_gen(module, N=10000000, cycles=5):
     m = __import__(module)
     best = 1e999
     old_total = None
@@ -97,9 +97,12 @@ def test_list(module, N=10000000, cycles=5):
     for cycle in range(cycles):
         rng.seed(2)
         start = time.time()
-        #x = [r() for x in range(N)]
-        for x in range(N):
-            r()
+        for x in range(0, N, 25):
+            r();r();r();r();r()
+            r();r();r();r();r()
+            r();r();r();r();r()
+            r();r();r();r();r()
+            r();r();r();r();r()
         elapsed = time.time() - start
         if elapsed < best:
             best = elapsed
@@ -120,7 +123,7 @@ def test_print(module, N=1000):
 #test_print('sosemanuk')
 #sys.exit()
 
-test = test_list
+test = test_gen
 
 test('isaac')
 test('isaac64')
