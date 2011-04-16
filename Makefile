@@ -55,6 +55,7 @@ all::	isaac64.so
 all::	isaac.so
 all::	sosemanuk.so
 all::	hc128.so
+all::	tpy6.so
 
 ccan/configurator:
 	$(CC) $@.c -o $@
@@ -90,7 +91,7 @@ hc128.so: hc128.o  sha1.o
 TPY6_INCLUDES = -Itpy6
 
 estream-tpy6.o: tpy6/tpy6.c
-	$(CC)  $(TPY6_INCLUDES)  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+	$(CC)  $(TPY6_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
 tpy6.o: tpy6.c
 	$(CC) $(TPY6_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
