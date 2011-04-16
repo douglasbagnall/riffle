@@ -125,6 +125,7 @@ def test_print(module, N=1000):
 
 test = test_gen
 
+test('hc128')
 test('isaac')
 test('isaac64')
 test('sosemanuk')
