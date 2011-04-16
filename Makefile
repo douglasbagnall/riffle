@@ -27,6 +27,9 @@ ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe 
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
 
+dist-clean: clean
+	 ccan/configurator config.h
+
 .c.o:
 	$(CC)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
@@ -53,10 +56,13 @@ all::	issac.so
 all::	sosemanuk.so
 all::	hc128.so
 
-config.h:
-	$(CC) ccan/configurator.c -o ccan/configurator
-	ccan/configurator
+ccan/configurator:
+	$(CC) $@.c -o $@
 
+config.h: ccan/configurator
+	ccan/configurator > $@
+
+isaac64.o issac.o: config.h
 
 DSFMT_FLAGS =  -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800  -Wmissing-prototypes  -std=c99
 
