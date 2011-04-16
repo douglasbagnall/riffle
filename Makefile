@@ -74,7 +74,7 @@ dSFMT.so: dSFMT/dSFMT.o dSFMT.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 sosemanuk/sosemanuk.o: sosemanuk/sosemanuk.c
-	$(CC)  $(DSFMT_FLAGS)  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+	$(CC)  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
 sosemanuk.so: sosemanuk.o sosemanuk/sosemanuk.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
