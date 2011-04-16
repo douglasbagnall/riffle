@@ -48,6 +48,10 @@ all::	mt19937module.so
 all::	dSFMT.so
 all::	lcg.so
 all::	dummyc.so
+config.h:
+	$(CC) ccan/configurator.c -o ccan/configurator
+	ccan/configurator
+
 
 DSFMT_FLAGS =  -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800  -Wmissing-prototypes  -std=c99
 
@@ -69,6 +73,6 @@ isaac64.so: isaac64.o sha1.o ccan/isaac/isaac64.o
 isaac.so: isaac.o sha1.o ccan/isaac/isaac.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-config.h:
-	$(CC) ccan/configurator.c -o ccan/configurator
-	ccan/configurator
+hc128.so: hc128.o  sha1.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
