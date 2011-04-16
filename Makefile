@@ -28,7 +28,7 @@ clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
 
 dist-clean: clean
-	 ccan/configurator config.h
+	rm ccan/configurator config.h
 
 .c.o:
 	$(CC)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
@@ -51,8 +51,8 @@ all::	mt19937module.so
 all::	dSFMT.so
 all::	lcg.so
 all::	dummyc.so
-all::	issac64.so
-all::	issac.so
+all::	isaac64.so
+all::	isaac.so
 all::	sosemanuk.so
 all::	hc128.so
 
@@ -62,7 +62,7 @@ ccan/configurator:
 config.h: ccan/configurator
 	ccan/configurator > $@
 
-isaac64.o issac.o: config.h
+isaac64.o isaac.o: config.h
 
 DSFMT_FLAGS =  -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800  -Wmissing-prototypes  -std=c99
 
