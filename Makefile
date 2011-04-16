@@ -48,6 +48,11 @@ all::	mt19937module.so
 all::	dSFMT.so
 all::	lcg.so
 all::	dummyc.so
+all::	issac64.so
+all::	issac.so
+all::	sosemanuk.so
+all::	hc128.so
+
 config.h:
 	$(CC) ccan/configurator.c -o ccan/configurator
 	ccan/configurator
