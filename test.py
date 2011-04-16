@@ -4,6 +4,32 @@ import sys
 from math import sqrt
 import time
 
+NORMALISED_N = 1e7
+
+FAST = [
+    'salsa20_12',
+    'tpy6',
+    'hc128',
+    'isaac64',
+    'sosemanuk',
+    'mt19937',
+    'dSFMT',
+    'lcg',
+    'dummyc',
+    ]
+
+SLOW = [
+    'dummy',
+    'random',
+    'isaac',
+    ]
+
+REALLY_SLOW = ['urandom',]
+
+DEFAULT = FAST
+MOST = DEFAULT + SLOW
+ALL = DEFAULT + SLOW + REALLY_SLOW
+
 #test fuctions borrowed from standard random module
 def _test_generator(n, func, args):
     import time
@@ -26,7 +52,7 @@ def _test_generator(n, func, args):
     print('avg %g, stddev %g, min %g, max %g' % \
               (avg, stddev, smallest, largest))
 
-def _test(rng=None, N=2000):
+def test_distribution(rng=None, N=2000):
     _test_generator(N, rng.random, ())
     _test_generator(N, rng.normalvariate, (0.0, 1.0))
     _test_generator(N, rng.lognormvariate, (0.0, 1.0))
@@ -87,8 +113,9 @@ def test_sum(module, N=1000000, cycles=5):
     #print(m.__doc__)
     print("Module %s (sum of %s, best of %s runs)\n Total %10.4f    seconds %10.4f" %
           (module, N, cycles, total, best))
+    return (best * NORMALISED_N / N)
 
-def test_gen(module, N=10000000, cycles=5):
+def test_speed(module, N=10000000, cycles=5):
     m = __import__(module)
     best = 1e999
     old_total = None
@@ -108,7 +135,7 @@ def test_gen(module, N=10000000, cycles=5):
             best = elapsed
     print("Module %-12s (best of %s runs, %s cycles) %10.4f seconds" %
           (module, N, cycles, best))
-
+    return (best * NORMALISED_N / N)
 
 def test_print(module, N=1000):
     m = __import__(module)
@@ -120,22 +147,56 @@ def test_print(module, N=1000):
     print()
 
 
-#test_print('sosemanuk')
-#sys.exit()
+def test_several(test=test_speed, generators=None, **kwargs):
+    if generators is None:
+        generators = DEFAULT
+    results = {}
+    for x in generators:
+        results[x] = test(x, **kwargs)
 
-test = test_gen
+    print("Normailsed time (%d iterations)" % (NORMALISED_N,))
+    ordered = sorted((v, k) for k, v in results.items())
+    for x in ordered:
+        print('%10.5s %s' % x)
 
-test('salsa20_12')
-test('tpy6')
-test('hc128')
-test('isaac')
-test('isaac64')
-test('sosemanuk')
-test('random')
-test('mt19937')
-test('dSFMT')
-test('lcg')
-test('dummy')
-test('dummyc')
-#test('urandom')
 
+def main():
+    args = sys.argv[1:] or ['speed']
+
+    generators = []
+    tests = []
+    unknown = []
+    N = None
+    runs = None
+    G = globals()
+
+    for x in args:
+        if x.isupper():
+            generators += G[x]
+        elif x.isdigit():
+          d = int(x)
+          if d < 99:
+              runs = d
+          else:
+              N = d
+        elif 'test_' + x in G:
+            tests.append(G['test_' + x])
+        elif x in ALL:
+            generators.append(x)
+        else:
+            unknown.append(x)
+
+    if not generators:
+        generators = DEFAULT
+
+#    for k in ('args', 'generators', 'tests', 'N', 'runs',
+#              'unknown',):
+#        print("%10s: %s" % (k, locals()[k]))
+
+    kwargs = dict((k, v) for k, v in (('N', N), ('cycles', runs))
+                  if v is not None)
+
+    for x in tests:
+        test_several(x, generators=generators, **kwargs)
+
+main()
