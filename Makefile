@@ -56,6 +56,7 @@ all::	isaac.so
 all::	sosemanuk.so
 all::	hc128.so
 all::	tpy6.so
+all::	salsa20_12.so
 
 ccan/configurator:
 	$(CC) $@.c -o $@

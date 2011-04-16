@@ -169,9 +169,27 @@ void ECRYPT_decrypt_bytes(ECRYPT_ctx *x,const u8 *c,u8 *m,u32 bytes)
   ECRYPT_encrypt_bytes(x,c,m,bytes);
 }
 
+#if 0
 void ECRYPT_keystream_bytes(ECRYPT_ctx *x,u8 *stream,u32 bytes)
 {
   u32 i;
   for (i = 0;i < bytes;++i) stream[i] = 0;
   ECRYPT_encrypt_bytes(x,stream,stream,bytes);
 }
+
+#else
+void ECRYPT_keystream_bytes(ECRYPT_ctx *x, u8 *stream, u32 bytes)
+{
+  if (!bytes) return;
+  for (;bytes >= 64;) {
+    salsa20_wordtobyte(stream, x->input);
+    x->input[8] = PLUSONE(x->input[8]);
+    if (!x->input[8]) {
+      x->input[9] = PLUSONE(x->input[9]);
+      /* stopping at 2^70 bytes per nonce is user's responsibility */
+    }
+    stream += 64;
+    bytes -= 64;
+  }
+}
+#endif

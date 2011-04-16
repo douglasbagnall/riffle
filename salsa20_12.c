@@ -19,7 +19,7 @@
 
 #define BUFFER_DOUBLES 16
 
-#define KEY_BYTES (256 / 8)
+#define KEY_BYTES (128 / 8)
 
 typedef struct {
     PyObject_HEAD
