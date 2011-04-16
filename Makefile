@@ -87,3 +87,13 @@ isaac.so: isaac.o sha1.o ccan/isaac/isaac.o
 hc128.so: hc128.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+TPY6_INCLUDES = -Itpy6
+
+estream-tpy6.o: tpy6/tpy6.c
+	$(CC)  $(TPY6_INCLUDES)  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+tpy6.o: tpy6.c
+	$(CC) $(TPY6_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
+
+tpy6.so: estream-tpy6.o tpy6.o sha1.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
