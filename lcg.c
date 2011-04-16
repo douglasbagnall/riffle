@@ -137,26 +137,7 @@ random_getrandbits(RandomObject *self, PyObject *args)
     return result;
 }
 
-static PyObject *
-random_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    RandomObject *self;
-    PyObject *tmp;
-
-    if (type == &Random_Type && !_PyArg_NoKeywords("Random()", kwds))
-        return NULL;
-
-    self = (RandomObject *)type->tp_alloc(type, 0);
-    if (self == NULL)
-        return NULL;
-    tmp = random_seed(self, args);
-    if (tmp == NULL) {
-        Py_DECREF(self);
-        return NULL;
-    }
-    Py_DECREF(tmp);
-    return (PyObject *)self;
-}
+RANDOM_CLASS_NEW()
 
 RANDOM_METHODS_STRUCT();
 

@@ -56,6 +56,24 @@ initialise_state(u8 *output, size_t outlen, u8 *input, size_t inlen){
     }
 }
 
+#define RANDOM_CLASS_NEW() static PyObject * \
+random_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {\
+    RandomObject *self;\
+    PyObject *tmp;\
+    if (type == &Random_Type && !_PyArg_NoKeywords("Random()", kwds))\
+        return NULL;\
+    self = (RandomObject *)type->tp_alloc(type, 0);\
+    if (self == NULL)\
+        return NULL;\
+    tmp = random_seed(self, args);\
+    if (tmp == NULL) {\
+        Py_DECREF(self);\
+        return NULL;\
+    }\
+    Py_DECREF(tmp);\
+    return (PyObject *)self;\
+}
+
 
 #define RANDOM_METHODS_STRUCT() static PyMethodDef random_methods[] = {	\
     {"random",          (PyCFunction)random_random,  METH_NOARGS,\
