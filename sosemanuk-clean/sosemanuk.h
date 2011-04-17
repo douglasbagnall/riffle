@@ -21,17 +21,6 @@
 #ifndef SOSEMANUK_H__
 #define SOSEMANUK_H__
 
-/*
- * This macro enables the ECRYPT API, and disables the local API.
- * It is defined by default, for ECRYPT processing.
- */
-//#define SOSEMANUK_ECRYPT
-
-#ifdef SOSEMANUK_ECRYPT
-
-#include "ecrypt-sync.h"
-
-#else
 
 #include <limits.h>
 
@@ -173,4 +162,3 @@ void sosemanuk_encrypt(sosemanuk_run_context *rc,
 
 #endif
 
-#endif
