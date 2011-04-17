@@ -7,6 +7,7 @@ import time
 NORMALISED_N = 1e7
 
 FAST = [
+    'snow2',
     'salsa20_12',
     'tpy6',
     'hc128',
