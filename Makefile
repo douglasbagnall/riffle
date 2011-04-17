@@ -112,6 +112,19 @@ salsa20_12.o: ecrypt_generic.c
 salsa20_12.so: salsa20_12_regs/salsa20.o salsa20_12.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+TRIVIUM_INCLUDES =  -Iinclude -Itrivium
+
+trivium/trivium.o: trivium/trivium.c
+	$(CC)  $(TRIVIUM_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+trivium.o: ecrypt_generic.c
+	$(CC) $(TRIVIUM_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=trivium \
+	-DKEY_BYTES='(80/8)' -DIV_BYTES='(64/8)' -o $@ $<
+
+trivium.so: trivium/trivium.o trivium.o sha1.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+
 SNOW2_INCLUDES =  -Iinclude -Isnow2
 
 snow2/snow-2.0.o: snow2/snow-2.0.c
