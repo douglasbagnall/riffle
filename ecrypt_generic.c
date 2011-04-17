@@ -76,9 +76,9 @@ random_seed(RandomObject *self, PyObject *args)
         return NULL;
 
     u8 seed[KEY_BYTES + IV_BYTES];
-    memset(seed, '#', KEY_BYTES + IV_BYTES);
+    memset(seed, '#', sizeof(seed));
 
-    if (extract_seed(arg, seed) != 0){
+    if (extract_seed(arg, seed, sizeof(seed)) != 0){
 	return NULL;
     }
     ECRYPT_keysetup(&self->ctx, seed, KEY_BYTES * 8, IV_BYTES * 8);

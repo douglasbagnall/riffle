@@ -85,13 +85,13 @@ urandomise_state(u8 *state, size_t len){
  */
 
 UNUSED static int
-extract_seed(PyObject *arg, u8 *seed){
+extract_seed(PyObject *arg, u8 *seed, size_t seed_len){
     if (arg == NULL || arg == Py_None) {
 	/* try first with urandom, fall back to time */
-	if (urandomise_state(seed, sizeof(seed)) != 0){
+	if (urandomise_state(seed, seed_len) != 0){
 	    time_t now;
 	    time(&now);
-	    snprintf((char *)seed, sizeof(seed), "%lx%p%p", now, &arg, &now);
+	    snprintf((char *)seed, seed_len, "%lx%p%p", now, &arg, &now);
 	}
     }
     else if (PyObject_CheckReadBuffer(arg)){
@@ -100,13 +100,13 @@ extract_seed(PyObject *arg, u8 *seed){
 	if (PyObject_AsReadBuffer(arg, &buffer, &buffer_len)){
 	    return -1;
 	}
-	initialise_state(seed, sizeof(seed), (u8*)buffer, buffer_len);
+	initialise_state(seed, seed_len, (u8*)buffer, buffer_len);
     }
     else {
 	/*use python hash. it would be possible, but perhaps surprising to
 	  use the string representation */
 	long hash = PyObject_Hash(arg);
-	snprintf((char *)seed, sizeof(seed), "%ld", hash);
+	snprintf((char *)seed, seed_len, "%ld", hash);
     }
     return 0;
 }
