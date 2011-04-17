@@ -63,7 +63,7 @@
 static INLINE unum32
 decode32le(unsigned char *data)
 {
-#ifdef __i386
+#if defined __i386 || defined __amd64
 	/*
 	 * On i386, we prefer accessing data directly. Unaligned accesses
 	 * imply only a one-cycle penalty; even with that penalty, this
@@ -92,7 +92,7 @@ decode32le(unsigned char *data)
 static INLINE void
 encode32le(unsigned char *dst, unum32 val)
 {
-#ifdef __i386__
+#if defined __i386 || defined __amd64
 	/*
 	 * Optimized version for i386. See comments in decode32le().
 	 */
