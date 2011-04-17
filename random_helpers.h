@@ -1,4 +1,8 @@
-//#include "Python.h"
+#if ! HAVE_RANDOM_HELPERS
+#define HAVE_RANDOM_HELPERS 1
+#include "Python.h"
+#include <time.h>               /* for seeding to current time */
+#include <stdio.h>              /* for opening urandom */
 
 #ifndef INVISIBLE
 #define INVISIBLE __attribute__ ((visibility("hidden")))
@@ -55,6 +59,58 @@ initialise_state(u8 *output, size_t outlen, u8 *input, size_t inlen){
 	remaining -= 20;
     }
 }
+
+/* randomise from urandom if possible.
+   Returns -1 on failure, 0 on success.
+ */
+UNUSED static int
+urandomise_state(u8 *state, size_t len){
+    FILE * fd = fopen("/dev/urandom", "r");
+    if (fd == NULL){
+	return -1;
+    }
+    size_t got = fread(state, 1, len, fd);/*ought to loop, probably*/
+    if (got != len){
+	fclose(fd);
+	return -1;
+    }
+    fclose(fd);
+    return 0;
+}
+
+/* extract a seed from a python object.
+   If it is NULL or None, use a random seed.
+   If it is a buffer (e.g. a string), hash it with sha1.
+   Otherwise, use the python hash.
+ */
+
+UNUSED static int
+extract_seed(PyObject *arg, u8 *seed){
+    if (arg == NULL || arg == Py_None) {
+	/* try first with urandom, fall back to time */
+	if (urandomise_state(seed, sizeof(seed)) != 0){
+	    time_t now;
+	    time(&now);
+	    snprintf((char *)seed, sizeof(seed), "%lx%p%p", now, &arg, &now);
+	}
+    }
+    else if (PyObject_CheckReadBuffer(arg)){
+	const void *buffer;
+	Py_ssize_t buffer_len;
+	if (PyObject_AsReadBuffer(arg, &buffer, &buffer_len)){
+	    return -1;
+	}
+	initialise_state(seed, sizeof(seed), (u8*)buffer, buffer_len);
+    }
+    else {
+	/*use python hash. it would be possible, but perhaps surprising to
+	  use the string representation */
+	long hash = PyObject_Hash(arg);
+	snprintf((char *)seed, sizeof(seed), "%ld", hash);
+    }
+    return 0;
+}
+
 
 #define RANDOM_CLASS_NEW() static PyObject * \
 random_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {\
@@ -180,3 +236,27 @@ PyInit_ ## name  (void) \
 
 /*workaround for CPP expansion oddities*/
 #define RANDOM_MODULE_INIT2(name) RANDOM_MODULE_INIT(name)
+
+
+/* Add the ECRYPT_init call for ecrypt modules */
+/* ECRYPT_init intialises tables common to all instances */
+#define RANDOM_MODULE_INIT_ECRYPT(name) PyMODINIT_FUNC	\
+PyInit_ ## name  (void) \
+{ \
+    PyObject *m;\
+    if (PyType_Ready(&Random_Type) < 0) \
+        return NULL;\
+    m = PyModule_Create(&randommodule);\
+    if (m == NULL)\
+        return NULL;\
+    Py_INCREF(&Random_Type);\
+    PyModule_AddObject(m, "Random", (PyObject *)&Random_Type);\
+    ECRYPT_init(); \
+    return m;\
+}
+
+#define RANDOM_MODULE_INIT2_ECRYPT(name) RANDOM_MODULE_INIT_ECRYPT(name)
+
+
+
+#endif
