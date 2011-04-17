@@ -54,7 +54,7 @@ def _test_generator(n, func, args):
     print('avg %g, stddev %g, min %g, max %g' % \
               (avg, stddev, smallest, largest))
 
-def test_distribution(rng=None, N=2000):
+def _test(rng=None, N=2000):
     _test_generator(N, rng.random, ())
     _test_generator(N, rng.normalvariate, (0.0, 1.0))
     _test_generator(N, rng.lognormvariate, (0.0, 1.0))
@@ -89,10 +89,11 @@ def monkey_rng(module, seed=None):
 
 
 def test_variants(module, N=10000):
+    print(module)
     m = __import__(module)
     rng = monkey_rng(m, 1)
     start = time.time()
-    _test(r)
+    _test(rng)
     elapsed = time.time() - start
     print("Module %s took %s seconds" % (module, elapsed))
 
