@@ -74,10 +74,11 @@ dSFMT/dSFMT.o: dSFMT/dSFMT.c
 dSFMT.so: dSFMT/dSFMT.o dSFMT.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-sosemanuk/sosemanuk.o: sosemanuk/sosemanuk.c
+SOSEMANUK_dir = sosemanuk-clean
+$(SOSEMANUK_dir)/sosemanuk.o: $(SOSEMANUK_dir)/sosemanuk.c
 	$(CC)  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
-sosemanuk.so: sosemanuk.o sosemanuk/sosemanuk.o sha1.o
+sosemanuk.so: sosemanuk.o $(SOSEMANUK_dir)/sosemanuk.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 isaac64.so: isaac64.o sha1.o ccan/isaac/isaac64.o
