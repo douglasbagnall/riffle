@@ -9,17 +9,15 @@
 /* ---------------------------------------------------------------*/
 
 #include "Python.h"
-#include <time.h>               /* for seeding to current time */
 
 #include "ecrypt-sync.h"
 
 #include "random_helpers.h"
 
 #define MODULE_NAME salsa20_12
-
 #define BUFFER_DOUBLES 16
-
 #define KEY_BYTES (128 / 8)
+#define IV_BYTES (64 / 8)
 
 typedef struct {
     PyObject_HEAD
@@ -69,32 +67,13 @@ random_seed(RandomObject *self, PyObject *args)
     if (!PyArg_UnpackTuple(args, "seed", 0, 1, &arg))
         return NULL;
 
-    u8 seed[64] = ("abcdefghijklmnopqrstuvwxyz123456"
-		   "abcdefghijklmnopqrstuvwxyz123456"
-	);
-    if (arg == NULL || arg == Py_None) {
-	/*XXX should use urandom */
-        time_t now;
-        time(&now);
-	snprintf((char *)seed, sizeof(seed), "%lx%p%p", now, &now, &self);
+    u8 seed[KEY_BYTES + IV_BYTES];
+    memset(seed, '#', KEY_BYTES + IV_BYTES);
+
+    if (extract_seed(arg, seed) != 0){
+	return NULL;
     }
-    else if (PyObject_CheckReadBuffer(arg)){
-	const void *buffer;
-	Py_ssize_t buffer_len;
-	if (PyObject_AsReadBuffer(arg, &buffer, &buffer_len)){
-	    return NULL;
-	}
-	initialise_state(seed, sizeof(seed), (u8*)buffer, buffer_len);
-    }
-    else {
-	/*use python hash. it would be possible, but perhaps surprising to
-	  use the string representation */
-	long hash = PyObject_Hash(arg);
-	//debug("seeding with hash %ld\n", hash);
-	snprintf((char *)seed, sizeof(seed), "%ld", hash);
-    }
-    /*now we have a seed. 50 bytes as key, 50 as IV. */
-    ECRYPT_keysetup(&self->ctx, seed, KEY_BYTES, 8);
+    ECRYPT_keysetup(&self->ctx, seed, KEY_BYTES * 8, IV_BYTES * 8);
     ECRYPT_ivsetup(&self->ctx, seed + KEY_BYTES);
     self->index = BUFFER_DOUBLES;
     Py_INCREF(Py_None);
@@ -125,5 +104,5 @@ RANDOM_MODULE_DOC(MODULE_NAME);
 
 RANDOM_MODULE_STRUCT(MODULE_NAME);
 
-RANDOM_MODULE_INIT2(MODULE_NAME)
+RANDOM_MODULE_INIT2_ECRYPT(MODULE_NAME)
 

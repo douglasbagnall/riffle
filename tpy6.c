@@ -16,8 +16,8 @@
 
 #define MODULE_NAME tpy6
 #define BUFFER_DOUBLES 16
-#define KEY_BYTES 16
-#define IV_BYTES  4
+#define KEY_BYTES (128 / 8)
+#define IV_BYTES (64 / 8)
 
 typedef struct {
     PyObject_HEAD
