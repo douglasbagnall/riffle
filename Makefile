@@ -91,13 +91,13 @@ hc128.so: hc128.o  sha1.o
 
 TPY6_INCLUDES = -Itpy6 -Iinclude
 
-estream-tpy6.o: tpy6/tpy6.c
+tpy6/tpy6.o: tpy6/tpy6.c
 	$(CC)  $(TPY6_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
-tpy6.o: tpy6.c
-	$(CC) $(TPY6_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
+tpy6.o: ecrypt_generic.c
+	$(CC) $(TPY6_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=tpy6 -o $@ $<
 
-tpy6.so: estream-tpy6.o tpy6.o sha1.o
+tpy6.so: tpy6/tpy6.o tpy6.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 
@@ -106,8 +106,8 @@ SALSA20_12_INCLUDES =  -Iinclude -Isalsa20_12_regs
 salsa20_12_regs/salsa20.o: salsa20_12_regs/salsa20.c
 	$(CC)  $(SALSA20_12_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
-salsa20_12.o: salsa20_12.c
-	$(CC) $(SALSA20_12_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
+salsa20_12.o: ecrypt_generic.c
+	$(CC) $(SALSA20_12_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=salsa20_12  -o $@ $<
 
 salsa20_12.so: salsa20_12_regs/salsa20.o salsa20_12.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+

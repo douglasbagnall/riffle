@@ -14,10 +14,18 @@
 
 #include "random_helpers.h"
 
-#define MODULE_NAME salsa20_12
+#ifndef MODULE_NAME
+#error define MODULE_NAME and possibly BUFFER_DOUBLES, KEY_BYTES, and IV_BYTES
+#endif
+#ifndef BUFFER_DOUBLES
 #define BUFFER_DOUBLES 16
+#endif
+#ifndef KEY_BYTES
 #define KEY_BYTES (128 / 8)
+#endif
+#ifndef IV_BYTES
 #define IV_BYTES (64 / 8)
+#endif
 
 typedef struct {
     PyObject_HEAD
