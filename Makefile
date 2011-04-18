@@ -57,6 +57,7 @@ all::	sosemanuk.so
 all::	hc128.so
 all::	tpy6.so
 all::	salsa20_12.so
+all::	salsa20_8.so
 all::	snow2.so
 all::	trivium.so
 
