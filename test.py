@@ -121,6 +121,40 @@ def test_sum(module, N=1000000, cycles=5):
           (module, N, cycles, total, best))
     return (best * NORMALISED_N / N)
 
+def test_histogram(module, N=1000000, buckets=10, cycles=None):
+    m = __import__(module)
+    if isinstance(cycles, int):#hack around simple api
+        buckets = cycles
+    rng = m.Random()
+    r = rng.random
+    h = [0] * buckets
+    rng.seed(2)
+    _int = int
+    start = time.time()
+    for i in range(N//2):
+        h[_int(r() * buckets)] += 1
+        h[_int(r() * buckets)] += 1
+    elapsed = time.time() - start
+    by_count = sorted((n * buckets / N, i) for i, n in enumerate(h))
+    minimum = by_count[0]
+    maximum = by_count[-1]
+    m1 = by_count[(buckets - 1) // 2]
+    m2 = by_count[buckets // 2]
+    if m1 == m2:
+        median = m1
+    else:
+        median = ((m1[0] + m2[0]) * 0.5, "%s/%s" % (m1[1], m2[1]))
+
+    print("Module %s, %s buckets, N=%s, %6.3fs" %
+          (module, buckets, N, elapsed))
+    print(' '.join(str(x) for x in h))
+    print("min: %.3f (%s), medi: %.3f (%s), max: %.3f (%s)" %
+          (minimum + median + maximum))
+    print()
+    #print(' '.join(str(x) for x in by_count))
+
+    return (elapsed * NORMALISED_N / N)
+
 def test_speed(module, N=10000000, cycles=5):
     m = __import__(module)
     best = 1e999
@@ -160,7 +194,7 @@ def test_several(test=test_speed, generators=None, **kwargs):
     for x in generators:
         results[x] = test(x, **kwargs)
 
-    print("Normailsed time (%d iterations)" % (NORMALISED_N,))
+    print("Normalised time (%d iterations)" % (NORMALISED_N,))
     ordered = sorted((v, k) for k, v in results.items())
     for x in ordered:
         print('%10.5s %s' % x)
@@ -197,10 +231,6 @@ def main():
 
     if unknown:
         print("Unknown generators: %s" % (', '.join(unknown)))
-#    for k in ('args', 'generators', 'tests', 'N', 'runs',
-#              'unknown',):
-#        print("%10s: %s" % (k, locals()[k]))
-
     kwargs = dict((k, v) for k, v in (('N', N), ('cycles', runs))
                   if v is not None)
 
