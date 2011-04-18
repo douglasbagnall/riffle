@@ -194,6 +194,8 @@ def main():
     if not generators:
         generators = DEFAULT
 
+    if unknown:
+        print("Unknown generators: %s" % (', '.join(unknown)))
 #    for k in ('args', 'generators', 'tests', 'N', 'runs',
 #              'unknown',):
 #        print("%10s: %s" % (k, locals()[k]))
