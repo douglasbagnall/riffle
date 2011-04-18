@@ -103,16 +103,16 @@ tpy6.o: ecrypt_generic.c
 tpy6.so: tpy6/tpy6.o tpy6.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+SALSA20_12_DIR = salsa20_12_regs
+SALSA20_12_INCLUDES =  -Iinclude -I$(SALSA20_12_DIR)
 
-SALSA20_12_INCLUDES =  -Iinclude -Isalsa20_12_regs
-
-salsa20_12_regs/salsa20.o: salsa20_12_regs/salsa20.c
+$(SALSA20_12_DIR)/salsa20.o: $(SALSA20_12_DIR)/salsa20.c
 	$(CC)  $(SALSA20_12_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
 salsa20_12.o: ecrypt_generic.c
 	$(CC) $(SALSA20_12_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=salsa20_12  -o $@ $<
 
-salsa20_12.so: salsa20_12_regs/salsa20.o salsa20_12.o sha1.o
+salsa20_12.so: $(SALSA20_12_DIR)/salsa20.o salsa20_12.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 TRIVIUM_INCLUDES =  -Iinclude -Itrivium
