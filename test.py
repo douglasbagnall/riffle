@@ -21,6 +21,8 @@ FAST = [
     ]
 
 SLOW = [
+    'grain',
+    'grain128',
     'dummy',
     'random',
     'isaac',

@@ -127,6 +127,35 @@ trivium.o: ecrypt_generic.c
 trivium.so: trivium/trivium.o trivium.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+GRAIN128_DIR = grain128_opt
+GRAIN128_INCLUDES =  -Iinclude -I$(GRAIN128_DIR)
+
+$(GRAIN128_DIR)/grain128.o: $(GRAIN128_DIR)/grain-128.c
+	$(CC)  $(GRAIN128_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+grain128.o: ecrypt_generic.c
+	$(CC) $(GRAIN128_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=grain128 \
+	-DKEY_BYTES='(128/8)' -DIV_BYTES='(96/8)' -o $@ $<
+
+grain128.so: $(GRAIN128_DIR)/grain128.o grain128.o sha1.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+
+##grain 
+GRAIN_DIR = grain_opt
+GRAIN_INCLUDES =  -Iinclude -I$(GRAIN_DIR)
+
+$(GRAIN_DIR)/grain.o: $(GRAIN_DIR)/grain-v1.c
+	$(CC)  $(GRAIN_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+grain.o: ecrypt_generic.c
+	$(CC) $(GRAIN_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=grain \
+	-DKEY_BYTES='(128/8)' -DIV_BYTES='(96/8)' -o $@ $<
+
+grain.so: $(GRAIN_DIR)/grain.o grain.o sha1.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+
 
 SNOW2_INCLUDES =  -Iinclude -Isnow2
 
