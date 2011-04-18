@@ -18,6 +18,12 @@
 #else
 #include "hc128_ref.h"
 #endif
+#ifndef KEY_BYTES
+#define KEY_BYTES (128 / 8)
+#endif
+#ifndef IV_BYTES
+#define IV_BYTES (64 / 8)
+#endif
 
 #define MODULE_NAME hc128
 
@@ -62,10 +68,6 @@ random_random(RandomObject *self)
     return PyFloat_FromDouble(*d - 1.0);
 }
 
-/*
- * The rest is Python-specific code, neither part of, nor derived from, the
- * Twister download.
- */
 
 static PyObject *
 random_seed(RandomObject *self, PyObject *args)
@@ -75,40 +77,14 @@ random_seed(RandomObject *self, PyObject *args)
     if (!PyArg_UnpackTuple(args, "seed", 0, 1, &arg))
         return NULL;
 
-    u8 seed[256] = ("abcdefghijklmnopqrstuvwxyz123456"
-		    "abcdefghijklmnopqrstuvwxyz123456"
-		    "abcdefghijklmnopqrstuvwxyz123456"
-		    "abcdefghijklmnopqrstuvwxyz123456"
-		    "abcdefghijklmnopqrstuvwxyz123456"
-		    "abcdefghijklmnopqrstuvwxyz123456"
-		    "abcdefghijklmnopqrstuvwxyz123456"
-		    "abcdefghijklmnopqrstuvwxyz123456"
-	);
-    if (arg == NULL || arg == Py_None) {
-	/*XXX should use urandom */
-        time_t now;
-        time(&now);
-	snprintf((char *)seed, sizeof(seed), "%lx%p%p", now, &now, &self);
-    }
-    else if (PyObject_CheckReadBuffer(arg)){
-	const void *buffer;
-	Py_ssize_t buffer_len;
-	if (PyObject_AsReadBuffer(arg, &buffer, &buffer_len)){
-	    return NULL;
-	}
-	initialise_state(seed, sizeof(seed), (u8*)buffer, buffer_len);
-    }
-    else {
-	/*use python hash. it would be possible, but perhaps surprising to
-	  use the string representation */
-	long hash = PyObject_Hash(arg);
-	//debug("seeding with hash %ld\n", hash);
-	snprintf((char *)seed, sizeof(seed), "%ld", hash);
-    }
-    /*now we have a seed */
+    u8 seed[KEY_BYTES + IV_BYTES];
+    memset(seed, '#', sizeof(seed));
 
-    /*this function initialize the state using 128-bit key and 128-bit IV*/
-    Initialization(&self->state, seed, seed + 128);
+    if (extract_seed(arg, seed, sizeof(seed)) != 0){
+	return NULL;
+    }
+    /*this function initialize the state using key and IV*/
+    Initialization(&self->state, seed, seed + KEY_BYTES);
 
     self->index = DOUBLES_PER_HC128;
     Py_INCREF(Py_None);
