@@ -115,6 +115,19 @@ salsa20_12.o: ecrypt_generic.c
 salsa20_12.so: $(SALSA20_12_DIR)/salsa20.o salsa20_12.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+
+SALSA20_8_DIR = salsa20_8_regs
+SALSA20_8_INCLUDES =  -Iinclude -I$(SALSA20_8_DIR)
+
+$(SALSA20_8_DIR)/salsa20.o: $(SALSA20_8_DIR)/salsa20.c
+	$(CC)  $(SALSA20_8_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+salsa20_8.o: ecrypt_generic.c
+	$(CC) $(SALSA20_8_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=salsa20_8  -o $@ $<
+
+salsa20_8.so: $(SALSA20_8_DIR)/salsa20.o salsa20_8.o sha1.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
 TRIVIUM_INCLUDES =  -Iinclude -Itrivium
 
 trivium/trivium.o: trivium/trivium.c
