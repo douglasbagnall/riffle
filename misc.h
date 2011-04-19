@@ -12,6 +12,8 @@
 #warning UNUSED is set
 #endif
 
+#include <stdint.h>
+
 #ifndef ECRYPT_PORTABLE
 /*ecrypt-portable also defines these. */
 typedef uint64_t u64;
