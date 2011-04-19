@@ -41,6 +41,7 @@ dist-clean: clean
 
 %.i:	%.c
 	$(CC)  -E  $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
+#	$(CC)  -E  -DMODULE_NAME=qqq -Iinclude -I$(SALSA20_12_DIR) $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
 .PHONY: TAGS all rsync clean debug
 
@@ -179,5 +180,11 @@ snow2/snow-2.0.o: snow2/snow-2.0.c
 snow2.o: ecrypt_generic.c
 	$(CC) $(SNOW2_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=snow2  -o $@ $<
 
-snow2.so: snow2/snow-2.0.o snow2.o sha1.o
+snow2-gsl.o: ecrypt_gsl_generic.c
+	$(CC) $(SNOW2_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=snow2  -o $@ $<
+
+snow2.so snow2-gsl.so:  %.so:%.o snow2/snow-2.0.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+#snow2.so: snow2/snow-2.0.o snow2.o sha1.o
+#	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
