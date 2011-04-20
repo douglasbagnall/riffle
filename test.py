@@ -155,9 +155,15 @@ def test_histogram(module, N=1000000, buckets=10, cycles=None):
     print(' '.join(str(x) for x in h))
     print("min: %.3f (%s), medi: %.3f (%s), max: %.3f (%s)" %
           (minimum + median + maximum))
-    print()
-    #print(' '.join(str(x) for x in by_count))
 
+    if True:
+        power = 2
+        print("exaggerated scale (x ** %s)" % power)
+        #normalised = (n * buckets / N, i) for i, n in enumerate(h))
+        for x in h:
+            bar = '#' * int((x * buckets / maximum[0] / N) ** power  * 70)
+            print(bar)
+    print()
     return (elapsed * NORMALISED_N / N)
 
 def test_speed(module, N=10000000, cycles=5):
@@ -192,7 +198,7 @@ def test_print(module, N=1000):
     print()
 
 
-def test_several(test=test_speed, generators=None, **kwargs):
+def _test_several(test=test_speed, generators=None, **kwargs):
     if generators is None:
         generators = DEFAULT
     results = {}
@@ -231,10 +237,13 @@ def usage():
     print()
     print(textwrap.fill("tests are: %s." % (', '.join(tests))))
     print("The default test is %s\n" % (DEFAULT_TEST))
-    print("iterations per test is a number over %s (defaults are test dependant)" % MAX_RUNS)
-    print("test runs is a number less than %s (defaults are test dependant)\n" % (MAX_RUNS + 1))
-    print("generators, generator groups, and tests, are additive")
-    print("numeric values are not: the last one wins\n")
+    print(textwrap.fill("Any number over %s sets the iterations "
+                        "per test (defaults are test dependant)." % MAX_RUNS))
+    print(textwrap.fill("Numbers less than %s set the number of runs, or for the histogram test, "
+                        "the nyumber of buckets (defaults are test dependant)." % (MAX_RUNS + 1)))
+    print()
+    print("Generators, generator groups, and tests, are additive")
+    print("Numeric values are not: the last one wins\n")
     print(textwrap.fill("EXAMPLE: run the sum and speed tests on the generators in "
                         "DEFAULT group and 'dummy'"
                         ", 7 times, using 300000 calls per run, and report the fastest runs:"))
@@ -281,6 +290,6 @@ def main():
                   if v is not None)
 
     for x in tests:
-        test_several(x, generators=generators, **kwargs)
+        _test_several(x, generators=generators, **kwargs)
 
 main()
