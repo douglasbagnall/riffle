@@ -120,7 +120,7 @@ snow2_IV_BYTES='(64/8)'
 tpy6_KEY_BYTES='(128/8)'
 tpy6_IV_BYTES='(64/8)'
 
-ECRYPT_ROOT = tpy6 snow2 grain grain128 trivium
+ECRYPT_ROOT = tpy6 snow2 grain grain128 trivium sosemanuk2 rabbit lex
 ECRYPT_OBJECTS = $(ECRYPT_ROOT:=/ecrypt.o)
 ECRYPT_SO = $(ECRYPT_ROOT:=.so)
 ECRYPT_O = $(ECRYPT_ROOT:=.o)
