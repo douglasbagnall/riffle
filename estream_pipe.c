@@ -71,7 +71,6 @@ int main(int argc, char *argv[]){
 #else
         size_t moved = write(1, bytes, BUFFER_BYTES);
 #endif
-        //debug("moved %lu bytes\n", moved);
     }
     return 0;
 }
