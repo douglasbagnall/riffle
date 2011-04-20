@@ -195,10 +195,14 @@ def test_several(test=test_speed, generators=None, **kwargs):
     for x in generators:
         results[x] = test(x, **kwargs)
 
-    print("Normalised time (%d iterations)" % (NORMALISED_N,))
     ordered = sorted((v, k) for k, v in results.items())
-    for x in ordered:
-        print('%10.5s %s' % x)
+    if None not in ordered:
+        print("Normalised time (%d iterations)" % (NORMALISED_N,))
+        slowest = max(ordered)[0]
+        for (dt, name) in ordered:
+            bar = '*' * int(dt * 50 / slowest)
+            print('%-12s %7.5s  %s' % (name, dt, bar))
+
 
 
 def main():
