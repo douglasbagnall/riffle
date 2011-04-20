@@ -62,8 +62,6 @@ int main(int argc, char *argv[]){
     struct iovec iov = { bytes, BUFFER_BYTES };
 #endif
     rng_init(&ctx, 3);
-    //u32 i;
-    //for(i = 0; i < 256; i++){
     for(;;){
         ECRYPT_keystream_bytes(&ctx,
                                bytes,
