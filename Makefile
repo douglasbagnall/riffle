@@ -60,13 +60,8 @@ all::	isaac64.so
 all::	isaac.so
 all::	sosemanuk.so
 all::	hc128.so
-all::	tpy6.so
 all::	salsa20_12.so
 all::	salsa20_8.so
-all::	snow2.so
-all::	trivium.so
-all::	grain128.so
-all::	grain.so
 
 ccan/configurator:
 	$(CC) $@.c -o $@
@@ -136,9 +131,9 @@ ECRYPT_PIPE = $(ECRYPT_ROOT:=_pipe)
 .PHONY: all pipe gsl objects
 
 objects:: $(ECRYPT_O)
-gsl:: $(ECRYPT_GSL_SO)
-pipe:: $(ECRYPT_PIPE)
-
+gsl::     $(ECRYPT_GSL_SO)
+pipe::    $(ECRYPT_PIPE)
+all::     $(ECRYPT_SO)
 
 #tpy6/tpy6.o snow2/snow2.o grain/grain.o grain128/grain128.o trivium/trivium.o: %.o: %.c
 $(ECRYPT_OBJECTS): %/ecrypt.o:

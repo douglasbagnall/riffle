@@ -20,10 +20,12 @@
 #ifndef BUFFER_DOUBLES
 #define BUFFER_DOUBLES 16
 #endif
-#ifndef KEY_BYTES
+#if ! KEY_BYTES + 0
+#undef KEY_BYTES
 #define KEY_BYTES (128 / 8)
 #endif
-#ifndef IV_BYTES
+#if ! IV_BYTES + 0
+#undef IV_BYTES
 #define IV_BYTES (64 / 8)
 #endif
 

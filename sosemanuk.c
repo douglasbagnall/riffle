@@ -11,7 +11,7 @@
 #include "Python.h"
 #include <time.h>               /* for seeding to current time */
 #include "random_helpers.h"
-#include "sosemanuk/sosemanuk.h"
+#include "sosemanuk-clean/sosemanuk.h"
 
 #define MODULE_NAME sosemanuk
 
