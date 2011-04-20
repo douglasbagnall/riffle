@@ -24,6 +24,11 @@ PY_FLAGS =  -pthread -c  -DNDEBUG  -fwrapv -Wstrict-prototypes  -I/usr/include/$
 
 ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
 
+NON_PY_FLAGS =  -fwrapv -Wstrict-prototypes -fPIC
+
+EXE_CFLAGS = -march=native -O3 -g  $(NON_PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
+
+
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
 
@@ -188,3 +193,9 @@ snow2.so snow2-gsl.so:  %.so:%.o snow2/snow-2.0.o sha1.o
 
 #snow2.so: snow2/snow-2.0.o snow2.o sha1.o
 #	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+
+snow2_pipe:  estream_pipe.c snow2/snow-2.0.o
+#	$(CC) $(SNOW2_INCLUDES)  $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=snow2  -o $@ $<
+	$(CC) $(SNOW2_INCLUDES)  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=snow2  -Wl,-O1 -o $@ $+
+
