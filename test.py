@@ -5,9 +5,10 @@ from math import sqrt
 import time
 
 NORMALISED_N = 1e7
+MAX_RUNS = 99
+DEFAULT_TEST = 'speed'
 
 FAST = [
-    'lex',
     'rabbit',
     'sosemanuk2',
     'salsa20_8',
@@ -30,6 +31,7 @@ SLOW = [
     'dummy',
     'random',
     'isaac',
+    'lex',
     ]
 
 REALLY_SLOW = ['urandom',]
@@ -207,8 +209,40 @@ def test_several(test=test_speed, generators=None, **kwargs):
 
 
 
+def usage():
+    import textwrap
+    G = globals()
+    groups = []
+    tests = []
+    for k, v in G.items():
+        if k.isupper() and isinstance(v, (list, tuple)):
+            groups.append((k, v))
+        elif k.startswith('test_'):
+            tests.append(k[5:])
+    groups.sort()
+    print("USAGE:\n%s [generators | generator groups | tests | iterations per test | test runs]\n"
+          % (sys.argv[0],))
+    print("generators groups are")
+    for k, v in groups:
+        print(textwrap.fill("%s: %s" % (k, ', '.join(v)), subsequent_indent='    '))
+    print()
+    print(textwrap.fill("generators can be any generator in ALL. "
+                        "With no generator named, all generators in DEFAULT will be tested\n"))
+    print()
+    print(textwrap.fill("tests are: %s." % (', '.join(tests))))
+    print("The default test is %s\n" % (DEFAULT_TEST))
+    print("iterations per test is a number over %s (defaults are test dependant)" % MAX_RUNS)
+    print("test runs is a number less than %s (defaults are test dependant)\n" % (MAX_RUNS + 1))
+    print("generators, generator groups, and tests, are additive")
+    print("numeric values are not: the last one wins\n")
+    print(textwrap.fill("EXAMPLE: run the sum and speed tests on the generators in "
+                        "DEFAULT group and 'dummy'"
+                        ", 7 times, using 300000 calls per run, and report the fastest runs:"))
+    print("%s DEFAULT speed dummy 7 300000 sum" % (sys.argv[0],))
+    sys.exit()
+
 def main():
-    args = sys.argv[1:] or ['speed']
+    args = sys.argv[1:]
 
     generators = []
     tests = []
@@ -218,11 +252,13 @@ def main():
     G = globals()
 
     for x in args:
-        if x.isupper():
+        if x in ('-h', '--help'):
+            usage()
+        elif x.isupper():
             generators += G[x]
         elif x.isdigit():
           d = int(x)
-          if d < 99:
+          if d <= MAX_RUNS:
               runs = d
           else:
               N = d
@@ -235,9 +271,12 @@ def main():
 
     if not generators:
         generators = DEFAULT
+    if not tests:
+        tests = [G['test_' + DEFAULT_TEST]]
 
     if unknown:
         print("Unknown generators: %s" % (', '.join(unknown)))
+        print('try --help for hints')
     kwargs = dict((k, v) for k, v in (('N', N), ('cycles', runs))
                   if v is not None)
 
