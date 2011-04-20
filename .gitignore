@@ -10,3 +10,4 @@ junk/
 estream/
 sha3/
 config.h
+*_pipe

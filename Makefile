@@ -125,31 +125,39 @@ snow2_IV_BYTES='(64/8)'
 tpy6_KEY_BYTES='(128/8)'
 tpy6_IV_BYTES='(64/8)'
 
-tpy6/tpy6.o snow2/snow2.o grain/grain.o grain128/grain128.o trivium/trivium.o: %.o: %.c
-	$(CC)  -Iinclude -I$(@D)  -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+ECRYPT_ROOT = tpy6 snow2 grain grain128 trivium
+ECRYPT_OBJECTS = $(ECRYPT_ROOT:=/ecrypt.o)
+ECRYPT_SO = $(ECRYPT_ROOT:=.so)
+ECRYPT_O = $(ECRYPT_ROOT:=.o)
+ECRYPT_GSL_O = $(ECRYPT_ROOT:=-gsl.o)
+ECRYPT_GSL_SO = $(ECRYPT_ROOT:=-gsl.so)
+ECRYPT_PIPE = $(ECRYPT_ROOT:=_pipe)
 
-tpy6.o snow2.o grain.o grain128.o trivium.o: %.o: ecrypt_generic.c
+.PHONY: all pipe gsl objects
+
+objects:: $(ECRYPT_O)
+gsl:: $(ECRYPT_GSL_SO)
+pipe:: $(ECRYPT_PIPE)
+
+
+#tpy6/tpy6.o snow2/snow2.o grain/grain.o grain128/grain128.o trivium/trivium.o: %.o: %.c
+$(ECRYPT_OBJECTS): %/ecrypt.o:
+	$(CC)  -Iinclude -I$(@D)  -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $*/$*.c
+
+$(ECRYPT_O): %.o: ecrypt_generic.c
 	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
 	-DKEY_BYTES=$($*_KEY_BYTES) -DIV_BYTES=$($*_IV_BYTES) -o $@ $<
 
-tpy6-gsl.o snow2-gsl.o: %-gsl.o: ecrypt_gsl_generic.c
+$(ECRYPT_GSL_O): %-gsl.o: ecrypt_gsl_generic.c
 	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -o $@ $<
 
-trivium.so:  %.so: %.o sha1.o trivium/trivium.o
+ $(ECRYPT_SO):  %.so: %.o sha1.o %/ecrypt.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-grain128.so: grain128/grain128.o grain128.o sha1.o
+ $(ECRYPT_GSL_SO):  %-gsl.so: %-gsl.o %/ecrypt.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-grain.so: grain/grain.o grain.o sha1.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-tpy6.so tpy6-gsl.so: tpy6/tpy6.o tpy6.o sha1.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
-snow2.so snow2-gsl.so:  %.so: %.o snow2/snow2.o sha1.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
-snow2_pipe: %_pipe:  estream_pipe.c snow2/snow2.o
+ $(ECRYPT_PIPE): %_pipe:  estream_pipe.c %/ecrypt.o
 	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
 
