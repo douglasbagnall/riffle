@@ -19,14 +19,13 @@ WARNINGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
 PY_VERSION = $(shell python3 -c 'import sys; print(sys.version[:3])')
 PYTHON = python$(PY_VERSION)
 
-PY_FLAGS =  -pthread -c  -DNDEBUG  -fwrapv -Wstrict-prototypes  -I/usr/include/$(PYTHON) -fPIC
+PY_FLAGS =  -pthread -DNDEBUG  -fwrapv -Wstrict-prototypes  -I/usr/include/$(PYTHON) -fPIC
 #-DPy_BUILD_CORE
 
 ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
 
-NON_PY_FLAGS =  -fwrapv -Wstrict-prototypes -fPIC
-
-EXE_CFLAGS = -march=native -O3 -g  $(NON_PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
+#drop some PY_FLAGS
+EXE_CFLAGS = -march=native -O3 -g  -fwrapv -Wstrict-prototypes -fPIC $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
 
 
 clean:
@@ -66,6 +65,8 @@ all::	salsa20_12.so
 all::	salsa20_8.so
 all::	snow2.so
 all::	trivium.so
+all::	grain128.so
+all::	grain.so
 
 ccan/configurator:
 	$(CC) $@.c -o $@
@@ -90,112 +91,65 @@ $(SOSEMANUK_dir)/sosemanuk.o: $(SOSEMANUK_dir)/sosemanuk.c
 sosemanuk.so: sosemanuk.o $(SOSEMANUK_dir)/sosemanuk.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-isaac64.so: isaac64.o sha1.o ccan/isaac/isaac64.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
-isaac.so: isaac.o sha1.o ccan/isaac/isaac.o
+isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 hc128.so: hc128.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-TPY6_INCLUDES = -Itpy6 -Iinclude
 
-tpy6/tpy6.o: tpy6/tpy6.c
-	$(CC)  $(TPY6_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+##### ecrypt modules
 
-tpy6.o: ecrypt_generic.c
-	$(CC) $(TPY6_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=tpy6 -o $@ $<
+SALSA_DIR_SUFFIX = regs
+SALSA20_12_DIR = salsa20_12_$(SALSA_DIR_SUFFIX)
+SALSA20_8_DIR = salsa20_8_$(SALSA_DIR_SUFFIX)
 
-tpy6.so: tpy6/tpy6.o tpy6.o sha1.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+$(SALSA20_12_DIR)/salsa20.o $(SALSA20_8_DIR)/salsa20.o:  %.o:%.c
+	$(CC)  -Iinclude -I$(@D) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
-SALSA20_12_DIR = salsa20_12_regs
-SALSA20_12_INCLUDES =  -Iinclude -I$(SALSA20_12_DIR)
+salsa20_12.o salsa20_8.o: ecrypt_generic.c
+	$(CC) -Iinclude -I$*_$(SALSA_DIR_SUFFIX) -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* -o $@ $<
 
-$(SALSA20_12_DIR)/salsa20.o: $(SALSA20_12_DIR)/salsa20.c
-	$(CC)  $(SALSA20_12_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
-
-salsa20_12.o: ecrypt_generic.c
-	$(CC) $(SALSA20_12_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=salsa20_12  -o $@ $<
-
-salsa20_12.so: $(SALSA20_12_DIR)/salsa20.o salsa20_12.o sha1.o
+salsa20_8.so salsa20_12.so:  %.so: %.o  sha1.o %_$(SALSA_DIR_SUFFIX)/salsa20.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 
-SALSA20_8_DIR = salsa20_8_regs
-SALSA20_8_INCLUDES =  -Iinclude -I$(SALSA20_8_DIR)
+trivium_KEY_BYTES = '(80/8)'
+trivium_IV_BYTES =  '(64/8)'
+grain128_KEY_BYTES='(128/8)'
+grain128_IV_BYTES='(96/8)'
+grain_KEY_BYTES='(128/8)'
+grain_IV_BYTES='(96/8)'
+snow2_KEY_BYTES='(128/8)'
+snow2_IV_BYTES='(64/8)'
+tpy6_KEY_BYTES='(128/8)'
+tpy6_IV_BYTES='(64/8)'
 
-$(SALSA20_8_DIR)/salsa20.o: $(SALSA20_8_DIR)/salsa20.c
-	$(CC)  $(SALSA20_8_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+tpy6/tpy6.o snow2/snow2.o grain/grain.o grain128/grain128.o trivium/trivium.o: %.o: %.c
+	$(CC)  -Iinclude -I$(@D)  -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
-salsa20_8.o: ecrypt_generic.c
-	$(CC) $(SALSA20_8_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=salsa20_8  -o $@ $<
+tpy6.o snow2.o grain.o grain128.o trivium.o: %.o: ecrypt_generic.c
+	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
+	-DKEY_BYTES=$($*_KEY_BYTES) -DIV_BYTES=$($*_IV_BYTES) -o $@ $<
 
-salsa20_8.so: $(SALSA20_8_DIR)/salsa20.o salsa20_8.o sha1.o
+tpy6-gsl.o snow2-gsl.o: %-gsl.o: ecrypt_gsl_generic.c
+	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -o $@ $<
+
+trivium.so:  %.so: %.o sha1.o trivium/trivium.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-TRIVIUM_INCLUDES =  -Iinclude -Itrivium
-
-trivium/trivium.o: trivium/trivium.c
-	$(CC)  $(TRIVIUM_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
-
-trivium.o: ecrypt_generic.c
-	$(CC) $(TRIVIUM_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=trivium \
-	-DKEY_BYTES='(80/8)' -DIV_BYTES='(64/8)' -o $@ $<
-
-trivium.so: trivium/trivium.o trivium.o sha1.o
+grain128.so: grain128/grain128.o grain128.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-GRAIN128_DIR = grain128_opt
-GRAIN128_INCLUDES =  -Iinclude -I$(GRAIN128_DIR)
-
-$(GRAIN128_DIR)/grain128.o: $(GRAIN128_DIR)/grain-128.c
-	$(CC)  $(GRAIN128_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
-
-grain128.o: ecrypt_generic.c
-	$(CC) $(GRAIN128_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=grain128 \
-	-DKEY_BYTES='(128/8)' -DIV_BYTES='(96/8)' -o $@ $<
-
-grain128.so: $(GRAIN128_DIR)/grain128.o grain128.o sha1.o
+grain.so: grain/grain.o grain.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-
-##grain 
-GRAIN_DIR = grain_opt
-GRAIN_INCLUDES =  -Iinclude -I$(GRAIN_DIR)
-
-$(GRAIN_DIR)/grain.o: $(GRAIN_DIR)/grain-v1.c
-	$(CC)  $(GRAIN_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
-
-grain.o: ecrypt_generic.c
-	$(CC) $(GRAIN_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=grain \
-	-DKEY_BYTES='(128/8)' -DIV_BYTES='(96/8)' -o $@ $<
-
-grain.so: $(GRAIN_DIR)/grain.o grain.o sha1.o
+tpy6.so tpy6-gsl.so: tpy6/tpy6.o tpy6.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-
-
-SNOW2_INCLUDES =  -Iinclude -Isnow2
-
-snow2/snow-2.0.o: snow2/snow-2.0.c
-	$(CC)  $(SNOW2_INCLUDES) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
-
-snow2.o: ecrypt_generic.c
-	$(CC) $(SNOW2_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=snow2  -o $@ $<
-
-snow2-gsl.o: ecrypt_gsl_generic.c
-	$(CC) $(SNOW2_INCLUDES)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=snow2  -o $@ $<
-
-snow2.so snow2-gsl.so:  %.so:%.o snow2/snow-2.0.o sha1.o
+snow2.so snow2-gsl.so:  %.so: %.o snow2/snow2.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-#snow2.so: snow2/snow-2.0.o snow2.o sha1.o
-#	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
-
-snow2_pipe:  estream_pipe.c snow2/snow-2.0.o
-#	$(CC) $(SNOW2_INCLUDES)  $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=snow2  -o $@ $<
-	$(CC) $(SNOW2_INCLUDES)  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=snow2  -Wl,-O1 -o $@ $+
+snow2_pipe: %_pipe:  estream_pipe.c snow2/snow2.o
+	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
 
