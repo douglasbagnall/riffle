@@ -12,3 +12,4 @@ sha3/
 config.h
 *_pipe
 ccan/configurator
+bin/
