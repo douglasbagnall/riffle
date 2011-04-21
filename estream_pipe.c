@@ -10,8 +10,10 @@
 #include <config.h>
 #include <stdlib.h>
 
-#define vmsplice 0
-#if vmsplice
+#include <sys/mman.h>
+
+#define VMSPLICE 0
+#if VMSPLICE
 #include <fcntl.h>
 #include <sys/uio.h>
 #else
@@ -25,7 +27,7 @@
 #error define MODULE_NAME and possibly BUFFER_BYTES, KEY_BYTES, and IV_BYTES
 #endif
 #ifndef BUFFER_BYTES
-#define BUFFER_BYTES 1024
+#define BUFFER_BYTES 4096
 #endif
 #ifndef KEY_BYTES
 #define KEY_BYTES (128 / 8)
@@ -58,9 +60,12 @@ rng_init(ECRYPT_ctx *ctx, u32 s)
 int main(int argc, char *argv[]){
     ECRYPT_ctx ctx;
     size_t UNUSED moved;
-    u8 bytes[BUFFER_BYTES] __attribute__ ((aligned (16)));
+    //u8 bytes[BUFFER_BYTES] __attribute__ ((aligned (16)));
+    u8 *bytes = mmap(NULL, BUFFER_BYTES, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 #if VMSPLICE
-    struct iovec iov = { bytes, BUFFER_BYTES };
+    struct iovec iov;
+    iov.iov_base = bytes;
+    iov.iov_len = BUFFER_BYTES;
 #endif
     rng_init(&ctx, 3);
     for(;;){
