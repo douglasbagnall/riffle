@@ -12,12 +12,7 @@
 #include <time.h>               /* for seeding to current time */
 #include "random_helpers.h"
 
-#define USE_HC32_OPT32
-#ifdef USE_HC32_OPT32
 #include "hc128_opt32.h"
-#else
-#include "hc128_ref.h"
-#endif
 #ifndef KEY_BYTES
 #define KEY_BYTES (128 / 8)
 #endif
@@ -26,8 +21,6 @@
 #endif
 
 #define MODULE_NAME hc128
-
-#ifdef USE_HC32_OPT32
 
 #define DOUBLES_PER_HC128 (8)
 
@@ -38,9 +31,6 @@ typedef struct {
 } RandomObject;
 
 #define hc128_genrand SixteenSteps
-#else
-#error hc128_ref not done yet
-#endif
 
 static PyTypeObject Random_Type;
 
