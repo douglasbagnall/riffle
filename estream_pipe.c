@@ -39,14 +39,8 @@ borrowed from mt19937 */
 static void
 rng_init(ECRYPT_ctx *ctx, u32 s)
 {
-    int i;
-    if (s == 0)
-        s = 4357;   /* the default seed is 4357, following MT */
     u8 seed[KEY_BYTES + IV_BYTES];
-    for (i = 0; i < KEY_BYTES + IV_BYTES; i++){
-        s = ((69069 * s) + 1);
-        seed[i] = (s >> 24) ^ (s >> 16) ^ (s >> 8);
-    }
+    seed_from_uint(seed, sizeof(seed), s);
     ECRYPT_keysetup(ctx, seed, KEY_BYTES * 8, IV_BYTES * 8);
     ECRYPT_ivsetup(ctx, seed + KEY_BYTES);
 }

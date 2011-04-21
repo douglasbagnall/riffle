@@ -34,4 +34,16 @@ typedef int8_t s8;
 #include <stdio.h>
 #define debug(format, ...) fprintf (stderr, (format),## __VA_ARGS__); fflush(stderr)
 
+
+/* Seeding routine using LCG from Mersenne Twister */
+static inline void seed_from_uint(u8*seed, u32 len, u32 s){
+    u32 i;
+    s = s || 4357;
+    for (i = 0; i < len; i++){
+        s = ((69069 * s) + 1);
+        seed[i] = (s >> 24) ^ (s >> 16) ^ (s >> 8);
+    }
+}
+
+
 #endif

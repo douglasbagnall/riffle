@@ -27,23 +27,11 @@
 #define IV_BYTES (64 / 8)
 #endif
 
-#define QUOTE_(x) #x
-#define QUOTE(x) QUOTE_(x)
-
-
-/*set the state (integer only), using an LCG
-borrowed from mt19937 */
 static void
 rng_init(sosemanuk_run_context *ctx, u32 s)
 {
-    int i;
-    if (s == 0)
-        s = 4357;   /* the default seed is 4357, following MT */
     u8 seed[KEY_BYTES + IV_BYTES];
-    for (i = 0; i < KEY_BYTES + IV_BYTES; i++){
-        s = ((69069 * s) + 1);
-        seed[i] = (s >> 24) ^ (s >> 16) ^ (s >> 8);
-    }
+    seed_from_uint(seed, sizeof(seed), s);
     sosemanuk_key_context kc;
     sosemanuk_schedule(&kc, seed, KEY_BYTES);
     sosemanuk_init(ctx, &kc, NULL, 0);  /*no IV */
