@@ -12,7 +12,6 @@
 
 all::
 
-
 GDB_ALWAYS_FLAGS = -g
 WARNINGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
 
@@ -46,23 +45,11 @@ dist-clean: clean
 
 %.i:	%.c
 	$(CC)  -E  $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
-#	$(CC)  -E  -DMODULE_NAME=qqq -Iinclude -I$(SALSA20_12_DIR) $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
 .PHONY: TAGS all rsync clean debug
 
 debug:
 	make -B CFLAGS='-g -fno-inline -fno-inline-functions -fno-omit-frame-pointer -O0'
-
-all::	mt19937module.so
-all::	dSFMT.so
-all::	lcg.so
-all::	dummyc.so
-all::	isaac64.so
-all::	isaac.so
-all::	sosemanuk.so
-all::	hc128.so
-all::	salsa20_12.so
-all::	salsa20_8.so
 
 ccan/configurator:
 	$(CC) $@.c -o $@
@@ -96,9 +83,10 @@ isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
 hc128.so: hc128.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
+all:: $(SPECIAL_MODULES)
 
-##### ecrypt modules
-
+###salsa ones are slightly weird in the hope that different implementations could be compared.
 SALSA_DIR_SUFFIX = regs
 SALSA20_12_DIR = salsa20_12_$(SALSA_DIR_SUFFIX)
 SALSA20_8_DIR = salsa20_8_$(SALSA_DIR_SUFFIX)
@@ -112,6 +100,8 @@ salsa20_12.o salsa20_8.o: ecrypt_generic.c
 salsa20_8.so salsa20_12.so:  %.so: %.o  sha1.o %_$(SALSA_DIR_SUFFIX)/salsa20.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+
+##### ecrypt modules
 
 trivium_KEY_BYTES = '(80/8)'
 trivium_IV_BYTES =  '(64/8)'
@@ -157,7 +147,6 @@ $(ECRYPT_GSL_O): %-gsl.o: ecrypt_gsl_generic.c
 
  $(ECRYPT_GSL_SO):  %-gsl.so: %-gsl.o %/ecrypt.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
 
  $(ECRYPT_PIPE): %_pipe:  estream_pipe.c %/ecrypt.o
 	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
