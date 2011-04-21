@@ -30,6 +30,7 @@ SLOW = [
     'grain',
     'grain128',
     'dummy',
+    'dummy2',
     'random',
     'isaac',
     ]

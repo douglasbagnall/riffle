@@ -83,7 +83,8 @@ isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
 hc128.so: hc128.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
+SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so mt19937module.so lcg.so
+SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so
 all:: $(SPECIAL_MODULES)
 
 
