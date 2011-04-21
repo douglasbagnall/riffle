@@ -12,16 +12,9 @@
 
 #include <sys/mman.h>
 
-#define VMSPLICE 0
-#if VMSPLICE
-#include <fcntl.h>
-#include <sys/uio.h>
-#else
 #include <unistd.h>
-#endif
 
 #include "misc.h"
-//#include "random_helpers.h"
 #include "sosemanuk-clean/sosemanuk.h"
 
 #ifndef BUFFER_BYTES
@@ -60,20 +53,10 @@ int main(int argc, char *argv[]){
     sosemanuk_run_context ctx;
     size_t UNUSED moved;
     u8 *bytes = mmap(NULL, BUFFER_BYTES, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-#if VMSPLICE
-    struct iovec iov;
-    iov.iov_base = bytes;
-    iov.iov_len = BUFFER_BYTES;
-#endif
     rng_init(&ctx, 3);
     for(;;){
 	sosemanuk_prng(&ctx, bytes, BUFFER_BYTES);
-#if VMSPLICE
-        moved = vmsplice(1, &iov, 1, 0);
-#else
         moved = write(1, bytes, BUFFER_BYTES);
-#endif
-        //debug("%x %x %x %x, wrote %lu\n", bytes[0], bytes[1], bytes[2], bytes[3], moved);
     }
     return 0;
 }

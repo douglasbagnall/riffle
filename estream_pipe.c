@@ -12,13 +12,7 @@
 
 #include <sys/mman.h>
 
-#define VMSPLICE 0
-#if VMSPLICE
-#include <fcntl.h>
-#include <sys/uio.h>
-#else
 #include <unistd.h>
-#endif
 
 #include "ecrypt-sync.h"
 #include "misc.h"
@@ -60,23 +54,13 @@ rng_init(ECRYPT_ctx *ctx, u32 s)
 int main(int argc, char *argv[]){
     ECRYPT_ctx ctx;
     size_t UNUSED moved;
-    //u8 bytes[BUFFER_BYTES] __attribute__ ((aligned (16)));
     u8 *bytes = mmap(NULL, BUFFER_BYTES, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-#if VMSPLICE
-    struct iovec iov;
-    iov.iov_base = bytes;
-    iov.iov_len = BUFFER_BYTES;
-#endif
     rng_init(&ctx, 3);
     for(;;){
         ECRYPT_keystream_bytes(&ctx,
                                bytes,
                                BUFFER_BYTES);
-#if VMSPLICE
-        moved = vmsplice(1, &iov, 1, 0);
-#else
         moved = write(1, bytes, BUFFER_BYTES);
-#endif
     }
     return 0;
 }
