@@ -5,7 +5,7 @@ from math import sqrt
 import time
 
 NORMALISED_N = 1e7
-MAX_RUNS = 99
+MAX_RUNS = 999
 DEFAULT_TEST = 'speed'
 
 FAST = [
