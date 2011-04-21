@@ -123,8 +123,10 @@ snow2_KEY_BYTES='(128/8)'
 snow2_IV_BYTES='(64/8)'
 tpy6_KEY_BYTES='(128/8)'
 tpy6_IV_BYTES='(64/8)'
+hc_128_KEY_BYTES='(128/8)'
+hc_128_IV_BYTES='(128/8)'
 
-ECRYPT_ROOT = tpy6 snow2 grain grain128 trivium sosemanuk2 rabbit
+ECRYPT_ROOT = tpy6 snow2 grain grain128 trivium sosemanuk2 rabbit hc_128
 ECRYPT_OBJECTS = $(ECRYPT_ROOT:=/ecrypt.o)
 ECRYPT_SO = $(ECRYPT_ROOT:=.so)
 ECRYPT_O = $(ECRYPT_ROOT:=.o)
