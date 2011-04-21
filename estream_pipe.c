@@ -57,6 +57,7 @@ rng_init(ECRYPT_ctx *ctx, u32 s)
 
 int main(int argc, char *argv[]){
     ECRYPT_ctx ctx;
+    size_t UNUSED moved;
     u8 bytes[BUFFER_BYTES] __attribute__ ((aligned (16)));
 #if VMSPLICE
     struct iovec iov = { bytes, BUFFER_BYTES };
@@ -67,9 +68,9 @@ int main(int argc, char *argv[]){
                                bytes,
                                BUFFER_BYTES);
 #if VMSPLICE
-        size_t moved = vmsplice(1, &iov, 1, 0);
+        moved = vmsplice(1, &iov, 1, 0);
 #else
-        size_t moved = write(1, bytes, BUFFER_BYTES);
+        moved = write(1, bytes, BUFFER_BYTES);
 #endif
     }
     return 0;
