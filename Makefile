@@ -87,6 +87,9 @@ $(SOSEMANUK_dir)/sosemanuk.o: $(SOSEMANUK_dir)/sosemanuk.c
 sosemanuk.so: sosemanuk.o $(SOSEMANUK_dir)/sosemanuk.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+sosemanuk_pipe: $(SOSEMANUK_dir)/sosemanuk.o sosemanuk_pipe.c
+	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
+
 isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
