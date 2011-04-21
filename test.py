@@ -31,7 +31,6 @@ SLOW = [
     'dummy',
     'random',
     'isaac',
-    'lex',
     ]
 
 REALLY_SLOW = ['urandom',]
