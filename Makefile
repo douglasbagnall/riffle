@@ -74,7 +74,8 @@ $(SOSEMANUK_dir)/sosemanuk.o: $(SOSEMANUK_dir)/sosemanuk.c
 sosemanuk.so: sosemanuk.o $(SOSEMANUK_dir)/sosemanuk.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-sosemanuk_pipe: $(SOSEMANUK_dir)/sosemanuk.o sosemanuk_pipe.c
+bin/sosemanuk_emitter: $(SOSEMANUK_dir)/sosemanuk.o sosemanuk_emitter.c
+	mkdir -p bin
 	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
 
 isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
@@ -86,7 +87,7 @@ hc128.so: hc128.o  sha1.o
 SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so mt19937module.so lcg.so
 SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so
 all:: $(SPECIAL_MODULES)
-
+emitters::   	bin/sosemanuk_emitter
 
 ##### standard ecrypt modules
 
@@ -109,14 +110,14 @@ ECRYPT_SO = $(ECRYPT_ROOT:=.so)
 ECRYPT_O = $(ECRYPT_ROOT:=.o)
 ECRYPT_GSL_O = $(ECRYPT_ROOT:=-gsl.o)
 ECRYPT_GSL_SO = $(ECRYPT_ROOT:=-gsl.so)
-ECRYPT_PIPE = $(ECRYPT_ROOT:=_pipe)
+ECRYPT_EMITTER = $(patsubst %,bin/%_emitter,$(ECRYPT_ROOT))
 
-.PHONY: all pipe gsl objects
+.PHONY: all emitters gsl objects
 
-objects:: $(ECRYPT_O)
-gsl::     $(ECRYPT_GSL_SO)
-pipe::    $(ECRYPT_PIPE)
-all::     $(ECRYPT_SO)
+objects::     $(ECRYPT_O)
+gsl::         $(ECRYPT_GSL_SO)
+emitters::    $(ECRYPT_EMITTER)
+all::         $(ECRYPT_SO)
 
 #tpy6/tpy6.o snow2/snow2.o grain/grain.o grain128/grain128.o trivium/trivium.o: %.o: %.c
 $(ECRYPT_OBJECTS): %/ecrypt.o:
@@ -135,6 +136,7 @@ $(ECRYPT_GSL_O): %-gsl.o: ecrypt_gsl_generic.c
  $(ECRYPT_GSL_SO):  %-gsl.so: %-gsl.o %/ecrypt.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
- $(ECRYPT_PIPE): %_pipe:  estream_pipe.c %/ecrypt.o
+ $(ECRYPT_EMITTER): bin/%_emitter:  estream_emitter.c %/ecrypt.o
+	mkdir -p bin
 	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
 
