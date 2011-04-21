@@ -86,22 +86,8 @@ hc128.so: hc128.o  sha1.o
 SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
 all:: $(SPECIAL_MODULES)
 
-###salsa ones are slightly weird in the hope that different implementations could be compared.
-SALSA_DIR_SUFFIX = regs
-SALSA20_12_DIR = salsa20_12_$(SALSA_DIR_SUFFIX)
-SALSA20_8_DIR = salsa20_8_$(SALSA_DIR_SUFFIX)
 
-$(SALSA20_12_DIR)/salsa20.o $(SALSA20_8_DIR)/salsa20.o:  %.o:%.c
-	$(CC)  -Iinclude -I$(@D) -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
-
-salsa20_12.o salsa20_8.o: ecrypt_generic.c
-	$(CC) -Iinclude -I$*_$(SALSA_DIR_SUFFIX) -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* -o $@ $<
-
-salsa20_8.so salsa20_12.so:  %.so: %.o  sha1.o %_$(SALSA_DIR_SUFFIX)/salsa20.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
-
-##### ecrypt modules
+##### standard ecrypt modules
 
 trivium_KEY_BYTES = '(80/8)'
 trivium_IV_BYTES =  '(64/8)'
@@ -116,7 +102,7 @@ tpy6_IV_BYTES='(64/8)'
 hc_128_KEY_BYTES='(128/8)'
 hc_128_IV_BYTES='(128/8)'
 
-ECRYPT_ROOT = tpy6 snow2 grain grain128 trivium sosemanuk2 rabbit hc_128
+ECRYPT_ROOT = tpy6 snow2 grain grain128 trivium sosemanuk2 rabbit hc_128 salsa20_8 salsa20_12
 ECRYPT_OBJECTS = $(ECRYPT_ROOT:=/ecrypt.o)
 ECRYPT_SO = $(ECRYPT_ROOT:=.so)
 ECRYPT_O = $(ECRYPT_ROOT:=.o)
