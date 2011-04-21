@@ -30,6 +30,7 @@ EXE_CFLAGS = -march=native -O3 -g  -fwrapv -Wstrict-prototypes -fPIC $(VECTOR_FL
 
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
+	rm -f */*.[do]
 
 dist-clean: clean
 	rm ccan/configurator config.h
