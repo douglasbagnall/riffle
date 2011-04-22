@@ -85,14 +85,34 @@ char *opt_set_uintval(const char *arg, unsigned int *ui)
 char *opt_set_longval(const char *arg, long *l)
 {
 	char *endp;
+	if (!arg[0])
+		return arg_bad("'%s' (an empty string) is not a number", arg);
 
 	/* This is how the manpage says to do it.  Yech. */
 	errno = 0;
 	*l = strtol(arg, &endp, 0);
-	if (*endp || !arg[0])
-		return arg_bad("'%s' is not a number", arg);
 	if (errno)
 		return arg_bad("'%s' is out of range", arg);
+	if (*endp){
+		/*The string continues with non-digits.  If there is just one
+		  letter and it is a common multiplier suffix, use it.*/
+		if (endp[1])
+			return arg_bad("'%s' is not a number", arg);
+		switch(*endp){
+		case 'K':
+		case 'k':
+			*l *= 1024;
+			break;
+		case 'M':
+		case 'm':
+			*l *= (1024 * 1024);
+			break;
+		/* 'G' would just be asking for trouble */
+		default:
+			return arg_bad("'%s' is not a number (unknown suffix)",
+				       arg);
+		}
+	}
 	return NULL;
 }
 
