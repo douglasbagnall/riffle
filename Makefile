@@ -31,6 +31,7 @@ OPT_OBJECTS = ccan/opt/opt.o ccan/opt/parse.o ccan/opt/helpers.o ccan/opt/usage.
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
 	rm -f */*.[do]
+	rm -f bin/*-emitter
 
 dist-clean: clean
 	rm ccan/configurator config.h
@@ -88,7 +89,7 @@ hc128.so: hc128.o  sha1.o
 SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so mt19937module.so lcg.so
 SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so
 all:: $(SPECIAL_MODULES)
-emitters::   	bin/sosemanuk_emitter
+emitters::   	bin/sosemanuk-emitter
 
 ##### standard ecrypt modules
 
@@ -111,7 +112,7 @@ ECRYPT_SO = $(ECRYPT_ROOT:=.so)
 ECRYPT_O = $(ECRYPT_ROOT:=.o)
 ECRYPT_GSL_O = $(ECRYPT_ROOT:=-gsl.o)
 ECRYPT_GSL_SO = $(ECRYPT_ROOT:=-gsl.so)
-ECRYPT_EMITTER = $(patsubst %,bin/%_emitter,$(ECRYPT_ROOT))
+ECRYPT_EMITTER = $(patsubst %,bin/%-emitter,$(ECRYPT_ROOT))
 
 .PHONY: all emitters gsl objects
 
@@ -139,5 +140,6 @@ $(ECRYPT_GSL_O): %-gsl.o: ecrypt_gsl_generic.c
 
 $(ECRYPT_EMITTER): bin/%-emitter:  estream_emitter.c %/ecrypt.o $(OPT_OBJECTS)
 	mkdir -p bin
-	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
+	$(CC) -Iinclude  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
+	-DKEY_BYTES=$($*_KEY_BYTES) -DIV_BYTES=$($*_IV_BYTES)   -Wl,-O1 -o $@ $+
 

@@ -16,6 +16,7 @@
 
 #include "misc.h"
 #include "sosemanuk-clean/sosemanuk.h"
+#include "emitter.h"
 
 #ifndef BUFFER_BYTES
 #define BUFFER_BYTES 4096
@@ -38,13 +39,18 @@ rng_init(sosemanuk_run_context *ctx, u32 s)
 }
 
 int main(int argc, char *argv[]){
+    parse_args(argc, argv);
+    size_t remaining = option_bytes;
     sosemanuk_run_context ctx;
-    size_t UNUSED moved;
     u8 *bytes = mmap(NULL, BUFFER_BYTES, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-    rng_init(&ctx, 3);
-    for(;;){
+    rng_init(&ctx, option_seed);
+    for(;option_bytes == 0 || remaining >= BUFFER_BYTES;){
 	sosemanuk_prng(&ctx, bytes, BUFFER_BYTES);
-        moved = write(1, bytes, BUFFER_BYTES);
+        remaining -= write(1, bytes, BUFFER_BYTES);
+    }
+    if (remaining){
+	sosemanuk_prng(&ctx, bytes, remaining);
+        remaining = write(1, bytes, remaining);
     }
     return 0;
 }

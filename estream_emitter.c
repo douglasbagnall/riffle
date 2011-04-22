@@ -16,17 +16,21 @@
 
 #include "ecrypt-sync.h"
 #include "misc.h"
+#include "emitter.h"
 
 #ifndef MODULE_NAME
 #error define MODULE_NAME and possibly BUFFER_BYTES, KEY_BYTES, and IV_BYTES
 #endif
-#ifndef BUFFER_BYTES
+#if ! BUFFER_BYTES + 0
+#undef BUFFER_BYTES
 #define BUFFER_BYTES 4096
 #endif
-#ifndef KEY_BYTES
+#if ! KEY_BYTES + 0
+#undef KEY_BYTES
 #define KEY_BYTES (128 / 8)
 #endif
-#ifndef IV_BYTES
+#if ! IV_BYTES + 0
+#undef IV_BYTES
 #define IV_BYTES (64 / 8)
 #endif
 
@@ -46,15 +50,23 @@ rng_init(ECRYPT_ctx *ctx, u32 s)
 }
 
 int main(int argc, char *argv[]){
+    parse_args(argc, argv);
     ECRYPT_ctx ctx;
-    size_t UNUSED moved;
     u8 *bytes = mmap(NULL, BUFFER_BYTES, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-    rng_init(&ctx, 3);
-    for(;;){
+    rng_init(&ctx, option_seed);
+    size_t remaining = option_bytes;
+    for(;option_bytes == 0 || remaining >= BUFFER_BYTES;){
         ECRYPT_keystream_bytes(&ctx,
                                bytes,
                                BUFFER_BYTES);
-        moved = write(1, bytes, BUFFER_BYTES);
+        remaining -= write(1, bytes, BUFFER_BYTES);
+    }
+
+    if (remaining){
+        ECRYPT_keystream_bytes(&ctx,
+                               bytes,
+                               BUFFER_BYTES);
+        remaining = write(1, bytes, remaining);
     }
     return 0;
 }
