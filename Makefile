@@ -132,10 +132,10 @@ $(ECRYPT_O): %.o: ecrypt_generic.c
 $(ECRYPT_GSL_O): %-gsl.o: ecrypt_gsl_generic.c
 	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -o $@ $<
 
- $(ECRYPT_SO):  %.so: %.o sha1.o %/ecrypt.o
+$(ECRYPT_SO):  %.so: %.o sha1.o %/ecrypt.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
- $(ECRYPT_GSL_SO):  %-gsl.so: %-gsl.o %/ecrypt.o
+$(ECRYPT_GSL_SO):  %-gsl.so: %-gsl.o %/ecrypt.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 $(ECRYPT_EMITTER): bin/%-emitter:  estream_emitter.c %/ecrypt.o $(OPT_OBJECTS)
