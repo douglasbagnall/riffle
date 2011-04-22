@@ -20,8 +20,6 @@
 typedef struct {
     PyObject_HEAD
     struct isaac64_ctx context;
-    double numbers[BUFFER_DOUBLES];
-    u32 index;
 } RandomObject;
 
 static PyTypeObject Random_Type;
@@ -35,12 +33,18 @@ static PyTypeObject Random_Type;
 static PyObject *
 random_random(RandomObject *self)
 {
-    //double d =  isaac64_next_double(&self->context);
-    u64 x = isaac64_next_uint64(&self->context);
-    x &= DSFMT_LOW_MASK;
-    x|= DSFMT_HIGH_CONST;
-    double d = *(double *) &x;
-    return PyFloat_FromDouble(d - 1.0);
+#if 0
+    double d =  isaac64_next_double(&self->context);
+#else
+    union{
+	u64 i;
+	double d;
+    } x;
+    x.i = isaac64_next_uint64(&self->context);
+    x.i &= DSFMT_LOW_MASK;
+    x.i |= DSFMT_HIGH_CONST;
+    return PyFloat_FromDouble(x.d - 1.0);
+#endif
 }
 
 /*
@@ -61,7 +65,7 @@ random_seed(RandomObject *self, PyObject *args)
 	/*XXX should use urandom */
         time_t now;
         time(&now);
-	snprintf((char *)seed, sizeof(seed), "%lx%p%p", now, &now, &self); 
+	snprintf((char *)seed, sizeof(seed), "%lx%p%p", now, &now, &self);
     }
     else if (PyObject_CheckReadBuffer(arg)){
 	const void *buffer;
@@ -72,11 +76,11 @@ random_seed(RandomObject *self, PyObject *args)
 	initialise_state(seed, sizeof(seed), (u8*)buffer, buffer_len);
     }
     else {
-	/*use python hash. it would be possible, but perhaps surprising to 
+	/*use python hash. it would be possible, but perhaps surprising to
 	  use the string representation */
 	long hash = PyObject_Hash(arg);
 	//debug("seeding with hash %ld\n", hash);
-	snprintf((char *)seed, sizeof(seed), "%ld", hash); 
+	snprintf((char *)seed, sizeof(seed), "%ld", hash);
     }
     /*now we have a seed */
 
