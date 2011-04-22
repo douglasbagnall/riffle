@@ -38,7 +38,8 @@ typedef int8_t s8;
 /* Seeding routine using LCG from Mersenne Twister */
 static inline void seed_from_uint(u8*seed, u32 len, u32 s){
     u32 i;
-    s = s || 4357;
+    if (s == 0)
+	s = 4357;
     for (i = 0; i < len; i++){
         s = ((69069 * s) + 1);
         seed[i] = (s >> 24) ^ (s >> 16) ^ (s >> 8);
