@@ -122,7 +122,9 @@
  *		return 0;
  *	}
  */
+#ifndef UNUSED
 #define UNUSED __attribute__((unused))
+#endif
 #else
 #define UNNEEDED
 #define NEEDED
