@@ -26,6 +26,7 @@ ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe 
 #drop some PY_FLAGS
 EXE_CFLAGS = -march=native -O3 -g  -fwrapv -Wstrict-prototypes -fPIC $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
 
+OPT_OBJECTS = ccan/opt/opt.o ccan/opt/parse.o ccan/opt/helpers.o ccan/opt/usage.o
 
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
@@ -74,9 +75,9 @@ $(SOSEMANUK_dir)/sosemanuk.o: $(SOSEMANUK_dir)/sosemanuk.c
 sosemanuk.so: sosemanuk.o $(SOSEMANUK_dir)/sosemanuk.o sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-bin/sosemanuk_emitter: $(SOSEMANUK_dir)/sosemanuk.o sosemanuk_emitter.c
+bin/sosemanuk-emitter: $(SOSEMANUK_dir)/sosemanuk.o sosemanuk_emitter.c $(OPT_OBJECTS)
 	mkdir -p bin
-	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
+	$(CC)  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* -Wl,-O1 -o $@ $+
 
 isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
@@ -136,7 +137,7 @@ $(ECRYPT_GSL_O): %-gsl.o: ecrypt_gsl_generic.c
  $(ECRYPT_GSL_SO):  %-gsl.so: %-gsl.o %/ecrypt.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
- $(ECRYPT_EMITTER): bin/%_emitter:  estream_emitter.c %/ecrypt.o
+$(ECRYPT_EMITTER): bin/%-emitter:  estream_emitter.c %/ecrypt.o $(OPT_OBJECTS)
 	mkdir -p bin
 	$(CC) -Iinclude -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -Wl,-O1 -o $@ $+
 
