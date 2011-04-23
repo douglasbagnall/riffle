@@ -48,7 +48,7 @@ dist-clean: clean
 %.i:	%.c
 	$(CC)  -E  $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
-.PHONY: TAGS all rsync clean debug
+.PHONY: TAGS all rsync clean debug emitters gsl emitter-test
 
 debug:
 	make -B CFLAGS='-g -fno-inline -fno-inline-functions -fno-omit-frame-pointer -O0'
@@ -143,3 +143,5 @@ $(ECRYPT_EMITTER): bin/%-emitter:  estream_emitter.c %/ecrypt.o $(OPT_OBJECTS)
 	$(CC) -Iinclude  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
 	-DKEY_BYTES=$($*_KEY_BYTES) -DIV_BYTES=$($*_IV_BYTES)   -Wl,-O1 -o $@ $+
 
+emitter-test: emitters
+	./emitters-test.sh bin/*-emitter
