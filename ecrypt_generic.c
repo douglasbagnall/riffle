@@ -55,8 +55,7 @@ random_random(RandomObject *self)
 	self->index = 0;
 	for (int i = 0; i < BUFFER_DOUBLES; i++){
 	    u64 *a = ((u64 *)self->numbers) + i;
-	    *a &= DSFMT_LOW_MASK;
-	    *a |= DSFMT_HIGH_CONST;
+	    DSFMT_INT64_TO_DOUBLE(*a);
 	}
     }
     double d = self->numbers[self->index];

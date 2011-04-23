@@ -58,6 +58,7 @@ static double
 rand_get_double (void *vstate)
 {
   u32 r = rand_get(vstate);
+  /*put the 32 bits in the most significant significand bits */
   u64 x = ((u64)r << 20) | DSFMT_HIGH_CONST;
   return *(double *)&x - 1.0;
   //XXX or try ldexp((double)x, -63) -1

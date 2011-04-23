@@ -31,6 +31,8 @@ typedef int8_t s8;
 #define DSFMT_HIGH_CONST UINT64_C(0x3FF0000000000000)
 #define DSFMT_SR	12
 
+#define DSFMT_INT64_TO_DOUBLE(x) do {(x) &= DSFMT_LOW_MASK; (x) |= DSFMT_HIGH_CONST;} while (0)
+
 #include <stdio.h>
 #define debug(format, ...) fprintf (stderr, (format),## __VA_ARGS__); fflush(stderr)
 

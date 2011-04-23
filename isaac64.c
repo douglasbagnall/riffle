@@ -41,8 +41,7 @@ random_random(RandomObject *self)
 	double d;
     } x;
     x.i = isaac64_next_uint64(&self->context);
-    x.i &= DSFMT_LOW_MASK;
-    x.i |= DSFMT_HIGH_CONST;
+    DSFMT_INT64_TO_DOUBLE(x.i);
     return PyFloat_FromDouble(x.d - 1.0);
 #endif
 }

@@ -49,8 +49,7 @@ random_random(RandomObject *self)
 	self->index = 0;
 	for (int i = 0; i < DOUBLES_PER_HC128; i ++){
 	    u64 *a = ((u64 *)self->state.keystream) + i;
-	    *a &= DSFMT_LOW_MASK;
-	    *a |= DSFMT_HIGH_CONST;
+	    DSFMT_INT64_TO_DOUBLE(*a);
 	}
     }
     double *d = ((double *)self->state.keystream) + self->index;

@@ -39,21 +39,13 @@ random_random(RandomObject *self)
 	sosemanuk_prng(&self->run_ctx, (u8*)self->numbers, BUFFER_DOUBLES * sizeof(double));
 	self->index = 0;
 	unsigned int i;
-	//debug("self %p, self->numbers %p index %d\n", self, self->numbers, self->index);
 	for (i = 0; i < BUFFER_DOUBLES; i ++){
 	    u64 *a = (u64 *)(self->numbers + i);
-	    //debug("a %p, index %d\n", a, i);
-	    //printf("raw %llx  ", *a);
-	    *a &= DSFMT_LOW_MASK;
-	    *a |= DSFMT_HIGH_CONST;
-	    //printf("masked %llx  ", (unsigned long long ) *a);
-	    //debug("a %p, index %d\n", a, i);
+	    DSFMT_INT64_TO_DOUBLE(*a);
 	}
     }
-    //debug("index %d\n", self->index);
     double *d = self->numbers + self->index;
     self->index ++;
-    //printf("double %f\n", d);
     return PyFloat_FromDouble(*d - 1.0);
 }
 
@@ -75,7 +67,7 @@ random_seed(RandomObject *self, PyObject *args)
 	/*XXX should use urandom */
         time_t now;
         time(&now);
-	snprintf((char *)seed, sizeof(seed), "%lx%p%p", now, &now, &self); 
+	snprintf((char *)seed, sizeof(seed), "%lx%p%p", now, &now, &self);
     }
     else if (PyObject_CheckReadBuffer(arg)){
 	const void *buffer;
@@ -86,15 +78,15 @@ random_seed(RandomObject *self, PyObject *args)
 	initialise_state(seed, sizeof(seed), (u8*)buffer, buffer_len);
     }
     else {
-	/*use python hash. it would be possible, but perhaps surprising to 
+	/*use python hash. it would be possible, but perhaps surprising to
 	  use the string representation */
 	long hash = PyObject_Hash(arg);
 	//debug("seeding with hash %ld\n", hash);
-	snprintf((char *)seed, sizeof(seed), "%ld", hash); 
+	snprintf((char *)seed, sizeof(seed), "%ld", hash);
     }
     /*now we have a seed */
 
-    sosemanuk_key_context kc;    
+    sosemanuk_key_context kc;
     sosemanuk_schedule(&kc, seed, sizeof(seed));
     sosemanuk_init(&self->run_ctx, &kc, NULL, 0);  /*no IV */
     self->index = BUFFER_DOUBLES;
