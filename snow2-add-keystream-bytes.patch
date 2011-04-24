@@ -1,0 +1,32 @@
+--- ./estream/benchmarks/snow-2.0/snow-2.0.c	2005-08-22 10:22:45.000000000 +1200
++++ snow2/snow2.c	2011-04-17 13:08:41.384875007 +1200
+@@ -78,4 +78,29 @@
+     }
+ }
+ 
++
++void ECRYPT_keystream_bytes(
++  ECRYPT_ctx* ctx,
++  u8* output, 
++  u32 msglen)
++{ 
++  u32 i;
++  u32 *keystream;
++
++  for ( ; msglen >= 64; msglen -= 64, output += 64)
++    {
++      keystream = (u32 *)output;
++      snow_keystream_fast(ctx, keystream);
++    }
++
++  if (msglen > 0)
++    {
++      u32 keystream2[16];
++      snow_keystream_fast(ctx, keystream2);
++      for (i = 0; i < msglen; i ++){
++	output[i] = ((u8*)keystream2)[i];
++      }
++    }
++}
++
+ /* ------------------------------------------------------------------------- */

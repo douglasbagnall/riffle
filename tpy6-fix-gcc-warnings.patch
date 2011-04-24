@@ -1,0 +1,64 @@
+Only in tpy6: ecrypt.d
+Only in tpy6: ecrypt.o
+Only in ./estream/submissions/py/tpy6/: Makefile
+diff -ur ./estream/submissions/py/tpy6//tpy6.c tpy6/tpy6.c
+--- ./estream/submissions/py/tpy6//tpy6.c	2011-04-16 22:28:33.763389000 +1200
++++ tpy6/tpy6.c	2011-04-16 22:31:52.073389014 +1200
+@@ -93,7 +93,6 @@
+   u32 s;
+ 
+   int keysize=ctx->keysize;
+-  int keysizeb=(keysize+7)>>3;
+   int ivsize=ctx->ivsize;
+   int ivsizeb=(ivsize+7)>>3;
+ 
+@@ -218,9 +217,7 @@
+      /* the last call for this stream, or either you will    */
+      /* loose a few bytes                                    */
+ {
+-  int i;
+-  int bl;
+-
++  u32 i;
+   u32 s=ctx->s;
+ 
+   while(msglen>=NUMBLOCKSATONCE*8)
+@@ -281,7 +278,7 @@
+ 
+       if(msglen&7)
+ 	{
+-	  int ii;
++	  u32 ii;
+ 	  u32 x0=(Y(i,43)&0x3F);
+ 	  P(i,64)=P(i,x0);
+ 	  P(i,x0)=P(i,0);
+@@ -313,9 +310,7 @@
+      /* If the length is not a multiple of 8, this must be the */
+      /* last call for this stream, or either you will loose a few bytes */
+ {
+-  int i;
+-  int bl;
+-
++  u32 i;
+   u32 s=ctx->s;
+ 
+   while(length>=NUMBLOCKSATONCE*8)
+@@ -359,7 +354,6 @@
+ 	  Y(i,YMAXIND+1)=(s^Y(i,YMININD))+Y(i,P(i,1+48));
+ 	  s=ROTL32(s,11);
+ 	  u32 output1=(s^Y(i,64))+Y(i,P(i,1+8));
+-	  u8 output1b[4];
+ 	  U32TO8_LITTLE(keystream+i, output1);
+ 	  s=ROTL32(s,7);
+ 	  u32 output2=(s^Y(i,-1))+Y(i,P(i,1+21));
+@@ -368,7 +362,7 @@
+ 
+       if(length&7)
+ 	{
+-	  int ii;
++	  u32 ii;
+ 	  u32 x0=(Y(i,43)&0x3F);
+ 	  P(i,64)=P(i,x0);
+ 	  P(i,x0)=P(i,0);
+Only in ./estream/submissions/py/tpy6/: tpy6.c~
+Only in ./estream/submissions/py/tpy6/: unverified.test-vectors

@@ -1,0 +1,24 @@
+--- ./estream/submissions/hc-256/hc-128/200701b/hc-128.c	2007-01-16 23:05:58.000000000 +1300
++++ hc_128/hc_128.c	2011-04-21 23:21:01.253100990 +1200
+@@ -295,3 +295,21 @@
+   }
+ 
+ }
++
++void ECRYPT_keystream_bytes(
++  ECRYPT_ctx* ctx, 
++  u8* output, 
++  u32 msglen)                /* Message length in bytes. */ 
++{
++  for ( ; msglen >= 64; msglen -= 64, output += 64){
++      generate_keystream(ctx, (u32*)output);
++  }
++
++  if (msglen > 0){
++    u32 i;
++    u32 keystream[16];
++    generate_keystream(ctx, keystream); 
++    for (i = 0; i < msglen; i ++)
++	output[i] = ((u8*)keystream)[i];
++  }
++}
