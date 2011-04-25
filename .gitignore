@@ -13,3 +13,4 @@ config.h
 *_pipe
 ccan/configurator
 bin/
+test-results
