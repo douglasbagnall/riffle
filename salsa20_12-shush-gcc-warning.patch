@@ -1,0 +1,11 @@
+--- a/ecrypt-sync.h	2011-04-16 23:08:50.033388992 +1200
++++ b/ecrypt-sync.h	2011-04-16 23:09:04.543389005 +1200
+@@ -71,7 +71,7 @@
+  * called once when the program starts (e.g., to build expanded S-box
+  * tables).
+  */
+-void ECRYPT_init();
++void ECRYPT_init(void);
+ 
+ /*
+  * Key setup. It is the user's responsibility to select the values of

@@ -1,9 +1,5 @@
-Only in tpy6: ecrypt.d
-Only in tpy6: ecrypt.o
-Only in ./estream/submissions/py/tpy6/: Makefile
-diff -ur ./estream/submissions/py/tpy6//tpy6.c tpy6/tpy6.c
---- ./estream/submissions/py/tpy6//tpy6.c	2011-04-16 22:28:33.763389000 +1200
-+++ tpy6/tpy6.c	2011-04-16 22:31:52.073389014 +1200
+--- a/tpy6.c	2011-04-16 22:28:33.763389000 +1200
++++ b/tpy6.c	2011-04-16 22:31:52.073389014 +1200
 @@ -93,7 +93,6 @@
    u32 s;
  
@@ -60,5 +56,3 @@ diff -ur ./estream/submissions/py/tpy6//tpy6.c tpy6/tpy6.c
  	  u32 x0=(Y(i,43)&0x3F);
  	  P(i,64)=P(i,x0);
  	  P(i,x0)=P(i,0);
-Only in ./estream/submissions/py/tpy6/: tpy6.c~
-Only in ./estream/submissions/py/tpy6/: unverified.test-vectors

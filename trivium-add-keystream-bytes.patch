@@ -1,9 +1,5 @@
-Only in trivium: ecrypt.d
-Only in trivium: ecrypt.o
-Only in ./estream/submissions/trivium/: Makefile
-diff -ur ./estream/submissions/trivium//trivium.c trivium/trivium.c
---- ./estream/submissions/trivium//trivium.c	2006-02-24 11:16:21.000000000 +1300
-+++ trivium/trivium.c	2011-04-17 13:36:04.214875003 +1200
+--- a/trivium.c	2006-02-24 11:16:21.000000000 +1300
++++ b/trivium.c	2011-04-17 13:36:04.214875003 +1200
 @@ -1,6 +1,6 @@
  /* trivium.c */
  
@@ -117,5 +113,3 @@ diff -ur ./estream/submissions/trivium//trivium.c trivium/trivium.c
 +
 +
  /* ------------------------------------------------------------------------- */
-Only in trivium: trivium.c~
-Only in ./estream/submissions/trivium/: unverified.test-vectors
