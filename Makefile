@@ -166,16 +166,6 @@ emitter-test: emitters
 	./emitters-test.sh bin/*-emitter
 
 #if an ecrypt source directory is missing, try fetching it from ecrypt svn.
-#testing:
 $(ECRYPT_H):
-#hc_128/ecrypt-sync.h:
-	@echo '$@' does not exist.  Probably the $(subst /ecrypt-sync.h,,$@) license is vague,
-	@echo missing, or dodgy.
-	@echo I can try to replace the whole $(subst /ecrypt-sync.h,,$@) directory with a copy
-	@echo from the estream repository.  That inolves fetching a tarball, untarring it, and
-	@echo possibly patching it a bit.
-	@echo "Do this now (y/N)?"
-	@read x && [ "Xy" = "X$$x" ]  || exit 99
-	@echo good! Let\'s try!
 	./fetch_ecrypt.sh  $(filter $(subst /ecrypt-sync.h,,$@):%,$(ESTREAM_DATA))
 

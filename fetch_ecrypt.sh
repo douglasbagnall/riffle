@@ -1,14 +1,27 @@
 #!/bin/bash
-
-echo "fetch_ecrypt.sh"
-# $HERE is this scripts directory (repository root)
-HERE=$(readlink -f $(dirname $0))
-ESTREAM_DIR=$HERE/estream
-
 #load colon separated variables
 IFS=':' read STEM PATCH RENAME_ME ESTREAM_PATH <<< "$1"
+#echo "stem: $STEM, patch: $PATCH, rename: $RENAME_ME, path: $ESTREAM_PATH"
 
-echo "stem: $STEM, patch: $PATCH, rename: $RENAME_ME, path: $ESTREAM_PATH"
+TARGET=$STEM/ecrypt-sync.h
+
+#Don't do all this just because someone did make -B
+if [ -f $STEM/ecrypt-sync.h ]; then
+   echo "$STEM/ecrypt-sync.h DOES exist.  To fetch it again, move it away."
+   exit 0
+fi
+
+echo "'$TARGET'" does not exist.  Probably the $STEM license is vague,
+echo missing, or dodgy.
+echo I can try to replace the whole $STEM directory with a copy
+echo from the estream repository.  That inolves fetching a tarball, untarring it,
+echo and possibly patching it a bit.
+echo "Do this now (y/N)?"
+read x && [ "Xy" = "X$$x" ]  || exit 99
+echo "good! Let's try!"
+
+# $HERE is this scripts directory (repository root)
+HERE=$(readlink -f $(dirname $0))
 
 #fetch and extract the tar in a temp dir
 TMPDIR=$(mktemp -d rngXXXXXXXXXX --t)
@@ -28,6 +41,11 @@ DIR=$(basename $ESTREAM_PATH)
 [ "$PATCH" ] && (cd $DIR; patch -p1 < $HERE/$PATCH)
 
 [ "$RENAME_ME" ] && mv $DIR/$RENAME_ME $DIR/$STEM.c
+
+#the Makefiles are useless and often confusing
+rm -f $DIR/Makefile
+
+[ -r  $HERE/$STEM ] && mv $HERE/$STEM $HERE/$STEM.$(date +%Y.%m.%d-%H.%M.%S)
 
 mv -n $DIR $HERE/$STEM
 
