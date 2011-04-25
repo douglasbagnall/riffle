@@ -106,13 +106,32 @@ tpy6_IV_BYTES='(64/8)'
 hc_128_KEY_BYTES='(128/8)'
 hc_128_IV_BYTES='(128/8)'
 
-ECRYPT_ROOT = tpy6 snow2 grain grain128 trivium sosemanuk2 rabbit hc_128 salsa20_8 salsa20_12
+#This looks crazy and perhaps is.  The point is that some of the
+#estream ciphers have vague or questionable licenses, and it would be
+#complicated to package them.  So the targets to make them download an
+#estream tarball, and patch and rename as necessary.  $(ESTREAM_DATA)
+#says what to do for each.
+
+############ stem : patch : rename-this-to-<stem>.c : estream path
+ESTREAM_DATA = tpy6:tpy6-fix-gcc-warnings.patch::submissions/py/tpy6 \
+	grain128::grain-128.c:submissions/grain/128/opt \
+	grain::grain-v1.c:submissions/grain/v1/opt \
+	rabbit:::submissions/rabbit/opt/1 \
+	trivium:trivium-add-keystream-bytes.patch::submissions/trivium \
+	hc_128:hc_128-add-keystream-bytes.patch:hc-128.c:submissions/hc-256/hc-128/200701b \
+	snow2:snow2-add-keystream-bytes.patch::benchmarks/snow-2.0 \
+	sosemanuk2::sosemanuk.c:submissions/sosemanuk \
+	salsa20_12:salsa20_12-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/12-rounds/regs \
+	salsa20_8:salsa20_8-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/8-rounds/regs \
+
+ECRYPT_ROOT = $(foreach x,$(ESTREAM_DATA),$(firstword $(subst :, ,$(x))))
 ECRYPT_OBJECTS = $(ECRYPT_ROOT:=/ecrypt.o)
 ECRYPT_SO = $(ECRYPT_ROOT:=.so)
 ECRYPT_O = $(ECRYPT_ROOT:=.o)
 ECRYPT_GSL_O = $(ECRYPT_ROOT:=-gsl.o)
 ECRYPT_GSL_SO = $(ECRYPT_ROOT:=-gsl.so)
 ECRYPT_EMITTER = $(patsubst %,bin/%-emitter,$(ECRYPT_ROOT))
+ECRYPT_H = $(patsubst %,%/ecrypt-sync.h,$(ECRYPT_ROOT))
 
 .PHONY: all emitters gsl objects
 
@@ -125,11 +144,11 @@ all::         $(ECRYPT_SO)
 $(ECRYPT_OBJECTS): %/ecrypt.o:
 	$(CC)  -Iinclude -I$(@D)  -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $*/$*.c
 
-$(ECRYPT_O): %.o: ecrypt_generic.c
+$(ECRYPT_O): %.o: ecrypt_generic.c %/ecrypt-sync.h
 	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
 	-DKEY_BYTES=$($*_KEY_BYTES) -DIV_BYTES=$($*_IV_BYTES) -o $@ $<
 
-$(ECRYPT_GSL_O): %-gsl.o: ecrypt_gsl_generic.c
+$(ECRYPT_GSL_O): %-gsl.o: ecrypt_gsl_generic.c %/ecrypt-sync.h
 	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$*  -o $@ $<
 
 $(ECRYPT_SO):  %.so: %.o sha1.o %/ecrypt.o
@@ -138,10 +157,25 @@ $(ECRYPT_SO):  %.so: %.o sha1.o %/ecrypt.o
 $(ECRYPT_GSL_SO):  %-gsl.so: %-gsl.o %/ecrypt.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-$(ECRYPT_EMITTER): bin/%-emitter:  estream_emitter.c %/ecrypt.o $(OPT_OBJECTS)
+$(ECRYPT_EMITTER): bin/%-emitter:  estream_emitter.c %/ecrypt.o $(OPT_OBJECTS) %/ecrypt-sync.h
 	mkdir -p bin
 	$(CC) -Iinclude  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
 	-DKEY_BYTES=$($*_KEY_BYTES) -DIV_BYTES=$($*_IV_BYTES)   -Wl,-O1 -o $@ $+
 
 emitter-test: emitters
 	./emitters-test.sh bin/*-emitter
+
+#if an ecrypt source directory is missing, try fetching it from ecrypt svn.
+#testing:
+$(ECRYPT_H):
+#hc_128/ecrypt-sync.h:
+	@echo '$@' does not exist.  Probably the $(subst /ecrypt-sync.h,,$@) license is vague,
+	@echo missing, or dodgy.
+	@echo I can try to replace the whole $(subst /ecrypt-sync.h,,$@) directory with a copy
+	@echo from the estream repository.  That inolves fetching a tarball, untarring it, and
+	@echo possibly patching it a bit.
+	@echo "Do this now (y/N)?"
+	@read x && [ "Xy" = "X$$x" ]  || exit 99
+	@echo good! Let\'s try!
+	./fetch_ecrypt.sh  $(filter $(subst /ecrypt-sync.h,,$@):%,$(ESTREAM_DATA))
+
