@@ -37,8 +37,10 @@ clean:
 	rm -f bin/*-emitter
 
 dist-clean: clean
-	rm ccan/configurator config.h
+	rm -f ccan/configurator config.h
 
+really-dist-clean: dist-clean
+	rm -rf $(ECRYPT_DODGY)
 .c.o:
 	$(CC)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
@@ -122,7 +124,7 @@ ESTREAM_DATA = tpy6:tpy6-fix-gcc-warnings.patch::submissions/py/tpy6 \
 	rabbit:::submissions/rabbit/opt/1 \
 	trivium:trivium-add-keystream-bytes.patch::submissions/trivium \
 	hc_128:hc_128-add-keystream-bytes.patch:hc-128.c:submissions/hc-256/hc-128/200701b \
-	snow2:snow2-add-keystream-bytes.patch::benchmarks/snow-2.0 \
+	snow2:snow2-add-keystream-bytes.patch:snow-2.0.c:benchmarks/snow-2.0 \
 	sosemanuk2::sosemanuk.c:submissions/sosemanuk \
 	salsa20_12:salsa20_12-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/12-rounds/regs \
 	salsa20_8:salsa20_8-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/8-rounds/regs \
@@ -135,6 +137,9 @@ ECRYPT_GSL_O = $(ECRYPT_ROOT:=-gsl.o)
 ECRYPT_GSL_SO = $(ECRYPT_ROOT:=-gsl.so)
 ECRYPT_EMITTER = $(patsubst %,bin/%-emitter,$(ECRYPT_ROOT))
 ECRYPT_H = $(patsubst %,%/ecrypt-sync.h,$(ECRYPT_ROOT))
+
+#these ones have unclear licenses
+ECRYPT_DODGY = tpy6 grain grain128 rabbit trivium hc_128 snow2
 
 .PHONY: all emitters gsl objects
 
