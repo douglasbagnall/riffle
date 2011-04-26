@@ -189,7 +189,12 @@ def test_speed(module, N=10000000, cycles=5):
           (module, N, cycles, best))
     return (best * NORMALISED_N / N)
 
-def test_print(module, N=1000):
+def test_print(module, N=None, cycles=None):
+    if N is None:
+        if cycles is not None:
+            N = cycles
+        else:
+            N = 200
     m = __import__(module)
     rng = m.Random()
     r = rng.random
@@ -206,8 +211,8 @@ def _test_several(test=test_speed, generators=None, **kwargs):
     for x in generators:
         results[x] = test(x, **kwargs)
 
-    ordered = sorted((v, k) for k, v in results.items())
-    if None not in ordered:
+    if None not in results.values():
+        ordered = sorted((v, k) for k, v in results.items())
         print("Normalised time (%d iterations)" % (NORMALISED_N,))
         slowest = max(ordered)[0]
         for (dt, name) in ordered:
