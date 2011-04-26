@@ -38,11 +38,8 @@ random_random(RandomObject *self)
     if (self->index >= BUFFER_DOUBLES){
 	sosemanuk_prng(&self->run_ctx, (u8*)self->numbers, BUFFER_DOUBLES * sizeof(double));
 	self->index = 0;
-	unsigned int i;
-	for (i = 0; i < BUFFER_DOUBLES; i ++){
-	    u64 *a = (u64 *)(self->numbers + i);
-	    DSFMT_INT64_TO_DOUBLE(*a);
-	}
+	doubleise_u64_buffer((u64 *)self->numbers,
+			     BUFFER_DOUBLES);
     }
     double *d = self->numbers + self->index;
     self->index ++;

@@ -13,13 +13,22 @@
 #include "ecrypt-sync.h"
 
 #include "random_helpers.h"
+#define RESCUE_BITS 1
 
 #ifndef MODULE_NAME
 #error define MODULE_NAME and possibly BUFFER_DOUBLES, KEY_BYTES, and IV_BYTES
 #endif
+
 #ifndef BUFFER_DOUBLES
-#define BUFFER_DOUBLES 16
+#if RESCUE_BITS
+#define RESCUED_DOUBLES 16
+#define BUFFER_DOUBLES (RESCUED_DOUBLES * 5)
+#else
+#define BUFFER_DOUBLES 64
+#define RESCUED_DOUBLES 0
 #endif
+#endif
+
 #if ! KEY_BYTES + 0
 #undef KEY_BYTES
 #define KEY_BYTES (128 / 8)
@@ -32,7 +41,7 @@
 typedef struct {
     PyObject_HEAD
     ECRYPT_ctx ctx;
-    double numbers[BUFFER_DOUBLES];
+    double numbers[BUFFER_DOUBLES + RESCUED_DOUBLES];
     u32 index;
 } RandomObject;
 
@@ -48,15 +57,19 @@ static PyTypeObject Random_Type;
 static PyObject *
 random_random(RandomObject *self)
 {
-    if (self->index >= BUFFER_DOUBLES){
+    if (self->index >= BUFFER_DOUBLES + RESCUED_DOUBLES){
 	ECRYPT_keystream_bytes(&self->ctx,
 			       (u8*)self->numbers,
 			       BUFFER_DOUBLES * sizeof(double));
 	self->index = 0;
-	for (int i = 0; i < BUFFER_DOUBLES; i++){
-	    u64 *a = ((u64 *)self->numbers) + i;
-	    DSFMT_INT64_TO_DOUBLE(*a);
-	}
+	#if RESCUE_BITS
+	doubleise_u64_buffer_with_rescuees((u64 *)self->numbers,
+					   BUFFER_DOUBLES,
+					   (u64 *)self->numbers + BUFFER_DOUBLES);
+	#else
+	doubleise_u64_buffer((u64 *)self->numbers,
+			     BUFFER_DOUBLES);
+	#endif
     }
     double d = self->numbers[self->index];
     self->index++;
@@ -84,7 +97,7 @@ random_seed(RandomObject *self, PyObject *args)
     }
     ECRYPT_keysetup(&self->ctx, seed, KEY_BYTES * 8, IV_BYTES * 8);
     ECRYPT_ivsetup(&self->ctx, seed + KEY_BYTES);
-    self->index = BUFFER_DOUBLES;
+    self->index = BUFFER_DOUBLES + RESCUED_DOUBLES;
     Py_INCREF(Py_None);
     return Py_None;
 }

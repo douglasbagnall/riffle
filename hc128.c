@@ -47,10 +47,8 @@ random_random(RandomObject *self)
     if (self->index >= DOUBLES_PER_HC128){
 	hc128_genrand(&self->state);
 	self->index = 0;
-	for (int i = 0; i < DOUBLES_PER_HC128; i ++){
-	    u64 *a = ((u64 *)self->state.keystream) + i;
-	    DSFMT_INT64_TO_DOUBLE(*a);
-	}
+	doubleise_u64_buffer((u64 *)self->state.keystream,
+			     DOUBLES_PER_HC128);
     }
     double *d = ((double *)self->state.keystream) + self->index;
     self->index ++;
