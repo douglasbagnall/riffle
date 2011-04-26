@@ -28,6 +28,9 @@ EXE_CFLAGS = -march=native -O3 -g  -fwrapv -Wstrict-prototypes -fPIC $(VECTOR_FL
 
 OPT_OBJECTS = ccan/opt/opt.o ccan/opt/parse.o ccan/opt/helpers.o ccan/opt/usage.o
 
+#set this to avoid y/N questions before downloading ecrypt modules
+#ECRYPT_NO_QUESTIONS = "no-questions"
+
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
 	rm -f */*.[do]
@@ -167,5 +170,5 @@ emitter-test: emitters
 
 #if an ecrypt source directory is missing, try fetching it from ecrypt svn.
 $(ECRYPT_H):
-	./fetch_ecrypt.sh  $(filter $(subst /ecrypt-sync.h,,$@):%,$(ESTREAM_DATA))
+	./fetch_ecrypt.sh  $(filter $(subst /ecrypt-sync.h,,$@):%,$(ESTREAM_DATA)) $(ECRYPT_NO_QUESTIONS)
 

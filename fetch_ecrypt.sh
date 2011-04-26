@@ -13,12 +13,15 @@ fi
 
 echo "'$TARGET'" does not exist.  Probably the $STEM license is vague,
 echo missing, or dodgy.
-echo I can try to replace the whole $STEM directory with a copy
-echo from the estream repository.  That inolves fetching a tarball, untarring it,
-echo and possibly patching it a bit.
-echo "Do this now (y/N)?"
-read x && [ "Xy" = "X$$x" ]  || exit 99
-echo "good! Let's try!"
+
+if [ "$2" != "no-questions" ]; then
+    echo I can try to replace the whole $STEM directory with a copy
+    echo from the estream repository.  That involves fetching a tarball, untarring it,
+    echo and possibly patching it a bit.
+    echo "Do this now (y/N)?"
+    read x && [ "Xy" = "X$x" ]  || exit 99
+    echo "good! here goes"
+fi
 
 # $HERE is this scripts directory (repository root)
 HERE=$(readlink -f $(dirname $0))
