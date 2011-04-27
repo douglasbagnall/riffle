@@ -1,6 +1,6 @@
 #!/bin/bash
 #load colon separated variables
-IFS=':' read STEM PATCH RENAME_ME ESTREAM_PATH <<< "$1"
+IFS=':' read STEM FREEDOM PATCH RENAME_ME ESTREAM_PATH <<< "$1"
 #echo "stem: $STEM, patch: $PATCH, rename: $RENAME_ME, path: $ESTREAM_PATH"
 
 TARGET=$STEM/ecrypt-sync.h
@@ -11,8 +11,8 @@ if [ -f $STEM/ecrypt-sync.h ]; then
    exit 0
 fi
 
-echo "'$TARGET'" does not exist.  Probably the $STEM license is vague,
-echo missing, or dodgy.
+echo "'$TARGET'" does not exist.
+[ "$FREEDOM" = "free" ] || echo "The $STEM license is vague or unknown".
 
 if [ "$2" != "no-questions" ]; then
     echo I can try to replace the whole $STEM directory with a copy

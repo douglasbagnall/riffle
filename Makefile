@@ -116,17 +116,17 @@ hc_128_IV_BYTES='(128/8)'
 #estream tarball, and patch and rename as necessary.  $(ESTREAM_DATA)
 #says what to do for each.
 
-############ stem : patch : rename-this-to-<stem>.c : estream path
-ESTREAM_DATA = tpy6:tpy6-fix-gcc-warnings.patch::submissions/py/tpy6 \
-	grain128::grain-128.c:submissions/grain/128/opt \
-	grain::grain-v1.c:submissions/grain/v1/opt \
-	rabbit:::submissions/rabbit/opt/1 \
-	trivium:trivium-add-keystream-bytes.patch::submissions/trivium \
-	hc_128:hc_128-add-keystream-bytes.patch:hc-128.c:submissions/hc-256/hc-128/200701b \
-	snow2:snow2-add-keystream-bytes.patch:snow-2.0.c:benchmarks/snow-2.0 \
-	sosemanuk2::sosemanuk.c:submissions/sosemanuk \
-	salsa20_12:salsa20_12-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/12-rounds/regs \
-	salsa20_8:salsa20_8-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/8-rounds/regs \
+############ stem : freedom : patch : rename-this-to-<stem>.c : estream path
+ESTREAM_DATA = tpy6:unknown:tpy6-fix-gcc-warnings.patch::submissions/py/tpy6 \
+	grain128:unknown::grain-128.c:submissions/grain/128/opt \
+	grain:unknown::grain-v1.c:submissions/grain/v1/opt \
+	rabbit:unknown:::submissions/rabbit/opt/1 \
+	trivium:unknown:trivium-add-keystream-bytes.patch::submissions/trivium \
+	hc_128:unknown:hc_128-add-keystream-bytes.patch:hc-128.c:submissions/hc-256/hc-128/200701b \
+	snow2:unknown:snow2-add-keystream-bytes.patch:snow-2.0.c:benchmarks/snow-2.0 \
+	sosemanuk2:free::sosemanuk.c:submissions/sosemanuk \
+	salsa20_12:free:salsa20_12-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/12-rounds/regs \
+	salsa20_8:free:salsa20_8-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/8-rounds/regs \
 
 ECRYPT_ROOT = $(foreach x,$(ESTREAM_DATA),$(firstword $(subst :, ,$(x))))
 ECRYPT_OBJECTS = $(ECRYPT_ROOT:=/ecrypt.o)
@@ -137,11 +137,19 @@ ECRYPT_GSL_SO = $(ECRYPT_ROOT:=-gsl.so)
 ECRYPT_EMITTER = $(patsubst %,bin/%-emitter,$(ECRYPT_ROOT))
 ECRYPT_H = $(patsubst %,%/ecrypt-sync.h,$(ECRYPT_ROOT))
 
-#these ones have unclear licenses
-ECRYPT_DODGY = tpy6 grain grain128 rabbit trivium hc_128 snow2
+#ECRYPT_DODGY have unclear licenses
+ECRYPT_DODGY = $(foreach x,$(ESTREAM_DATA),$(if $(findstring :free:, $x),,$(firstword $(subst :, ,$(x)))))
+ECRYPT_FREE =  $(foreach x,$(ESTREAM_DATA),$(if $(findstring :free:, $x),$(firstword $(subst :, ,$(x)))))
+#ECRYPT_UNKNOWN = $(foreach x,$(ESTREAM_DATA),$(if $(findstring :unknown:, $x),$(firstword $(subst :, ,$(x)))))
 
 
 .PHONY: emitters gsl objects  emitter-test test123
+
+test123:
+	@echo Free:     $(ECRYPT_FREE)
+	@echo Nonfree:  $(ECRYPT_NONFREE)
+	@echo Unknown:  $(ECRYPT_UNKNOWN)
+
 objects::     $(ECRYPT_O)
 gsl::         $(ECRYPT_GSL_SO)
 emitters::    $(ECRYPT_EMITTER)
