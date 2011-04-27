@@ -9,7 +9,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 # It may be distributed under the same terms as Python itself.
-
+.PHONY: all
 all::
 
 GDB_ALWAYS_FLAGS = -g
@@ -30,6 +30,7 @@ OPT_OBJECTS = ccan/opt/opt.o ccan/opt/parse.o ccan/opt/helpers.o ccan/opt/usage.
 
 #set this to avoid y/N questions before downloading ecrypt modules
 #ECRYPT_NO_QUESTIONS = "no-questions"
+.PHONY: clean dist-clean really-dist-clean debug
 
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
@@ -52,8 +53,6 @@ really-dist-clean: dist-clean
 
 %.i:	%.c
 	$(CC)  -E  $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
-
-.PHONY: TAGS all rsync clean debug emitters gsl emitter-test
 
 debug:
 	make -B CFLAGS='-g -fno-inline -fno-inline-functions -fno-omit-frame-pointer -O0'
@@ -141,8 +140,8 @@ ECRYPT_H = $(patsubst %,%/ecrypt-sync.h,$(ECRYPT_ROOT))
 #these ones have unclear licenses
 ECRYPT_DODGY = tpy6 grain grain128 rabbit trivium hc_128 snow2
 
-.PHONY: all emitters gsl objects
 
+.PHONY: emitters gsl objects  emitter-test test123
 objects::     $(ECRYPT_O)
 gsl::         $(ECRYPT_GSL_SO)
 emitters::    $(ECRYPT_EMITTER)
