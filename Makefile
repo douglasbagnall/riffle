@@ -9,8 +9,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 # It may be distributed under the same terms as Python itself.
-.PHONY: all
+.PHONY: all everything
 all::
+everything:: all
 
 GDB_ALWAYS_FLAGS = -g
 WARNINGS = -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
@@ -30,7 +31,7 @@ OPT_OBJECTS = ccan/opt/opt.o ccan/opt/parse.o ccan/opt/helpers.o ccan/opt/usage.
 
 #set this to avoid y/N questions before downloading ecrypt modules
 #ECRYPT_NO_QUESTIONS = "no-questions"
-.PHONY: clean dist-clean really-dist-clean debug
+.PHONY: clean dist-clean really-dist-clean debug free dodgy
 
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
@@ -92,7 +93,8 @@ hc128.so: hc128.o  sha1.o
 
 SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so mt19937module.so lcg.so
 SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so
-all:: $(SPECIAL_MODULES)
+free:: $(SPECIAL_MODULES)
+all:: free
 emitters::   	bin/sosemanuk-emitter
 
 ##### standard ecrypt modules
@@ -140,20 +142,21 @@ ECRYPT_H = $(patsubst %,%/ecrypt-sync.h,$(ECRYPT_ROOT))
 #ECRYPT_DODGY have unclear licenses
 ECRYPT_DODGY = $(foreach x,$(ESTREAM_DATA),$(if $(findstring :free:, $x),,$(firstword $(subst :, ,$(x)))))
 ECRYPT_FREE =  $(foreach x,$(ESTREAM_DATA),$(if $(findstring :free:, $x),$(firstword $(subst :, ,$(x)))))
-#ECRYPT_UNKNOWN = $(foreach x,$(ESTREAM_DATA),$(if $(findstring :unknown:, $x),$(firstword $(subst :, ,$(x)))))
-
+ECRYPT_EXISTING_DODGY_SO = $(filter $(subst /ecrypt-sync.h,.so, $(wildcard */ecrypt-sync.h)), $(ECRYPT_DODGY:=.so))
+ECRYPT_FREE_SO = $(ECRYPT_FREE:=.so)
 
 .PHONY: emitters gsl objects  emitter-test test123
 
 test123:
-	@echo Free:     $(ECRYPT_FREE)
-	@echo Nonfree:  $(ECRYPT_NONFREE)
-	@echo Unknown:  $(ECRYPT_UNKNOWN)
+	@echo free:     $(ECRYPT_FREE)
+	@echo dodgy:    $(ECRYPT_DODGY)
+	@echo dodgy, existing: $(ECRYPT_EXISTING_DODGY_SO)
 
 objects::     $(ECRYPT_O)
 gsl::         $(ECRYPT_GSL_SO)
 emitters::    $(ECRYPT_EMITTER)
-all::         $(ECRYPT_SO)
+all::	      $(ECRYPT_FREE_SO) $(ECRYPT_EXISTING_DODGY_SO)
+everything::  $(ECRYPT_SO)
 
 #tpy6/tpy6.o snow2/snow2.o grain/grain.o grain128/grain128.o trivium/trivium.o: %.o: %.c
 $(ECRYPT_OBJECTS): %/ecrypt.o:
