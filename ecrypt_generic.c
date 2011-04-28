@@ -62,14 +62,14 @@ random_random(RandomObject *self)
 			       (u8*)self->numbers,
 			       BUFFER_DOUBLES * sizeof(double));
 	self->index = 0;
-	#if RESCUE_BITS
+#if RESCUE_BITS
 	doubleise_u64_buffer_with_rescuees((u64 *)self->numbers,
 					   BUFFER_DOUBLES,
 					   (u64 *)self->numbers + BUFFER_DOUBLES);
-	#else
+#else
 	doubleise_u64_buffer((u64 *)self->numbers,
 			     BUFFER_DOUBLES);
-	#endif
+#endif
     }
     double d = self->numbers[self->index];
     self->index++;
