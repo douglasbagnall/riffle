@@ -169,7 +169,7 @@ all::	      $(ECRYPT_FREE_SO) $(ECRYPT_EXISTING_DODGY_SO)
 everything::  $(ECRYPT_SO)
 
 #tpy6/tpy6.o snow2/snow2.o grain/grain.o grain128/grain128.o trivium/trivium.o: %.o: %.c
-$(ECRYPT_OBJECTS): %/ecrypt.o:
+$(ECRYPT_OBJECTS): %/ecrypt.o: %/ecrypt-sync.h
 	$(CC)  -Iinclude -I$(@D)  -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $*/$*.c
 
 $(ECRYPT_O): %.o: ecrypt_generic.c %/ecrypt-sync.h
