@@ -44,7 +44,7 @@ dist-clean: clean
 really-dist-clean: dist-clean
 	rm -rf $(ECRYPT_DODGY)
 .c.o:
-	$(CC)  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
+	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
 %.so:	%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
@@ -73,6 +73,16 @@ dSFMT/dSFMT.o: dSFMT/dSFMT.c
 
 dSFMT.so: dSFMT/dSFMT.o dSFMT.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+phelix/phelix.o: phelix/phelix.c
+	$(CC) -Iinclude -I$* -MD $(ALL_CFLAGS) -DECRYPT_API -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+phelix.so: phelix.o phelix/phelix.o sha1.o
+	$(CC) -Iinclude -I$* -DECRYPT_API -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+bin/phelix-emitter: phelix/phelix.o phelix_emitter.c $(OPT_OBJECTS)
+	mkdir -p bin
+	$(CC)  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* -Wl,-O1 -o $@ $+
 
 SOSEMANUK_dir = sosemanuk-clean
 $(SOSEMANUK_dir)/sosemanuk.o: $(SOSEMANUK_dir)/sosemanuk.c
