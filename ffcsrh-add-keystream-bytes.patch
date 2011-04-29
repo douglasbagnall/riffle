@@ -1,0 +1,22 @@
+--- a/f-fcsr-h.c	2005-06-27 08:37:20.000000000 +1200
++++ b/f-fcsr-h.c	2011-04-29 12:35:57.521167001 +1200
+@@ -86,6 +86,19 @@
+ 	}
+ }
+ 
++void ECRYPT_keystream_bytes(
++  ECRYPT_ctx* ctx, 
++  u8* output, 
++  u32 msglen)                /* Message length in bytes. */ 
++{
++	u32 i;
++	for( i=0 ; i< msglen ; i++)
++	{
++		ECRYPT_clock(ctx);
++		output[i] = ECRYPT_filter(ctx);
++	}
++}
++
+ 
+ /* Update the shift register and the carry register of the FCSR */
+ void ECRYPT_clock(
