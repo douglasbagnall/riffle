@@ -139,6 +139,8 @@ ESTREAM_DATA = tpy6:unknown:tpy6-fix-gcc-warnings.patch::submissions/py/tpy6 \
 	sosemanuk2:free::sosemanuk.c:submissions/sosemanuk \
 	salsa20_12:free:salsa20_12-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/12-rounds/regs \
 	salsa20_8:free:salsa20_8-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/8-rounds/regs \
+	ffcsrh:free:ffcsrh-add-keystream-bytes.patch:f-fcsr-h.c:submissions/f-fcsr/f-fcsr-h \
+	abc3:mixed::abc-v3.c:submissions/abc/v3 \
 
 ECRYPT_ROOT = $(foreach x,$(ESTREAM_DATA),$(firstword $(subst :, ,$(x))))
 ECRYPT_OBJECTS = $(ECRYPT_ROOT:=/ecrypt.o)
@@ -149,7 +151,7 @@ ECRYPT_GSL_SO = $(ECRYPT_ROOT:=-gsl.so)
 ECRYPT_EMITTER = $(patsubst %,bin/%-emitter,$(ECRYPT_ROOT))
 ECRYPT_H = $(patsubst %,%/ecrypt-sync.h,$(ECRYPT_ROOT))
 
-#ECRYPT_DODGY have unclear licenses
+#ECRYPT_DODGY have unclear or not quite free licenses
 ECRYPT_DODGY = $(foreach x,$(ESTREAM_DATA),$(if $(findstring :free:, $x),,$(firstword $(subst :, ,$(x)))))
 ECRYPT_FREE =  $(foreach x,$(ESTREAM_DATA),$(if $(findstring :free:, $x),$(firstword $(subst :, ,$(x)))))
 ECRYPT_EXISTING_DODGY_SO = $(filter $(subst /ecrypt-sync.h,.so, $(wildcard */ecrypt-sync.h)), $(ECRYPT_DODGY:=.so))
@@ -170,7 +172,7 @@ everything::  $(ECRYPT_SO)
 
 #tpy6/tpy6.o snow2/snow2.o grain/grain.o grain128/grain128.o trivium/trivium.o: %.o: %.c
 $(ECRYPT_OBJECTS): %/ecrypt.o: %/ecrypt-sync.h
-	$(CC)  -Iinclude -I$(@D)  -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $*/$*.c
+	$(CC)  -Iinclude -I$(@D)  -fno-strict-aliasing  -MD $(ALL_CFLAGS)  -fvisibility=hidden -DECRYPT_API $(CPPFLAGS) -c -o $@ $*/$*.c
 
 $(ECRYPT_O): %.o: ecrypt_generic.c %/ecrypt-sync.h
 	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
