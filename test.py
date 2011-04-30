@@ -123,8 +123,9 @@ def test_sum(module, N=1000000, cycles=5):
         elapsed = time.time() - start
         if elapsed < best:
             best = elapsed
-        if old_total and old_total != total:
+        if old_total is not None and old_total != total:
             print("Mismatch in totals was %s, now %s" %(old_total, total))
+        old_total = total
 
     #print(m.__doc__)
     print("Module %s (sum of %s, best of %s runs)\n Total %10.4f    seconds %10.4f" %
