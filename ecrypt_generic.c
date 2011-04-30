@@ -21,6 +21,9 @@
 
 #ifndef BUFFER_DOUBLES
 #if RESCUE_BITS
+#if DOUBLE_COERCION != COERCE_DSFMT
+#error RESCUE_BITS is set but DOUBLE_COERCION != COERCE_DSFMT
+#endif
 #define RESCUED_DOUBLES 16
 #define BUFFER_DOUBLES (RESCUED_DOUBLES * 5)
 #else
@@ -73,7 +76,11 @@ random_random(RandomObject *self)
     }
     double d = self->numbers[self->index];
     self->index++;
+#if DOUBLE_COERCION == COERCE_DSFMT
     return PyFloat_FromDouble(d - 1.0);
+#else
+    return PyFloat_FromDouble(d);
+#endif
 }
 
 /*

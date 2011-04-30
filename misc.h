@@ -74,6 +74,12 @@ static inline void doubleise_u64_buffer_with_rescuees(u64 *restrict buffer,
     }
 }
 
+
+#define  COERCE_DSFMT 0
+#define  COERCE_LDEXP 1
+#define  COERCE_MUL   2
+
+#if DOUBLE_COERCION == COERCE_DSFMT
 static inline void doubleise_u64_buffer(u64 *restrict buffer,
 					int count){
     int i;
@@ -81,5 +87,26 @@ static inline void doubleise_u64_buffer(u64 *restrict buffer,
 	DSFMT_INT64_TO_DOUBLE(buffer[i]);
     }
 }
+#elif DOUBLE_COERCION == COERCE_LDEXP
+static inline void doubleise_u64_buffer(u64 *restrict buffer,
+					int count){
+    int i;
+    double *d = (double *)buffer;
+    for (i = 0; i < count; i++){
+	d[i] = ldexp((double)buffer[i], -64);
+    }
+}
+#elif DOUBLE_COERCION == COERCE_MUL
+#define U64_TO_DOUBLE (1.0 / 18446744073709551616.0)
+static inline void doubleise_u64_buffer(u64 *restrict buffer,
+					int count){
+    int i;
+    double *d = (double *)buffer;
+    for (i = 0; i < count; i++){
+	d[i] = buffer[i] * U64_TO_DOUBLE;
+    }
+}
+#endif
+
 
 #endif

@@ -66,7 +66,11 @@ random_random(RandomObject *self)
     }
     double *d = self->numbers + self->index;
     self->index ++;
+#if DOUBLE_COERCION == COERCE_DSFMT
     return PyFloat_FromDouble(*d - 1.0);
+#else
+    return PyFloat_FromDouble(*d);
+#endif
 }
 
 static PyObject *
