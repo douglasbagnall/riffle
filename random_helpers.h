@@ -94,9 +94,6 @@ random_setstate(RandomObject *self, PyObject *state)		\
     return NULL;						\
 }								\
 
-
-
-
 #define RANDOM_CLASS_NEW() static PyObject * \
 random_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {\
     RandomObject *self;\

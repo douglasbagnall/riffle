@@ -156,18 +156,7 @@ Done:
     return result;
 }
 
-static PyObject *
-random_getstate(RandomObject *self)
-{
-    return NULL;
-}
-
-static PyObject *
-random_setstate(RandomObject *self, PyObject *state)
-{
-    return NULL;
-
-}
+RANDOM_DUMMY_STATE_SETTERS()
 
 static PyObject *
 random_getrandbits(RandomObject *self, PyObject *args)
