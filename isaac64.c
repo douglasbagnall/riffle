@@ -20,8 +20,6 @@
 
 #define MODULE_NAME isaac64
 
-#define BUFFER_DOUBLES (16)
-
 typedef struct {
     PyObject_HEAD
     struct isaac64_ctx context;
@@ -47,11 +45,7 @@ random_random(RandomObject *self)
     } x;
     x.i = isaac64_next_uint64(&self->context);
     DSFMT_INT64_TO_DOUBLE(x.i);
-#if DOUBLE_COERCION == COERCE_DSFMT
     return PyFloat_FromDouble(x.d - 1.0);
-#else
-    return PyFloat_FromDouble(x.d);
-#endif
 #endif
 }
 
