@@ -1,0 +1,226 @@
+These are experiments with using stream ciphers as random number
+generators in Python.
+
+
+
+Copyright and Licenses
+======================
+
+This is a little complicated, with different files having different
+licenses.  The short answer is all the code is safe to use in a GPLv3
+project, and much of it is more liberally licensed.  The GPL code
+(except sha1.*, which can also be MPL) is not used in Python modules,
+so they are generally compatible with the license of Python itself.
+
+All files not mentioned below are copyright Douglas Bagnall and have a
+BSD-MIT license, except for the ones that only work with GPL code,
+which are themselves GPL.
+
+Here is a summary:
+
+ccan/compiler/*             [Rusty Russell; GPLv3+]
+ccan/configurator.c         [Rusty Russell; BSD-MIT]
+ccan/ilog/*                 [Timothy B. Terriberry; LGPLv2+]
+ccan/isaac/*                [Bob Jenkins, Tim Terriberry; Public Domain]
+ccan/opt/*                  [Rusty Russell; GPLv3+]
+ccan/typesafe_cb/*          [Rusty Russell; LGPLv2+]
+dSFMT-src-2.1/*             [Mutsuo Saito, Makoto Matsumoto, Hiroshima
+                             University, Andrea C G Mennucci; 3 clause BSD]
+sha1.c, sha1.h              [Paul Kocher; MPLv1.1+ or GPLv2+]
+mt19937module.c             [Makoto Matsumoto, Takuji Nishimura, Raymond
+                             Hettinger; 3 clause BSD]
+hc128_opt32.h               [Hongjun Wu; UNKNOWN license]
+salsa20_12/*                [D. J. Bernstein; Public Domain]
+salsa20_8/*                 [D. J. Bernstein; Public Domain]
+chacha8/*                   [D. J. Bernstein; Public Domain]
+include/*                   [eSTREAM project; UNKNOWN]
+sosemanuk-clean/*           [Thomas Pornin; MIT-ish]
+sosemanuk2/*                [Thomas Pornin; MIT-ish]
+
+
+The following directories are *not* distributed with this software,
+either because they have indistinct or non-free licenses, they are
+somewhat broken as ciphers, or their performance is uninteresting.
+However, they will all be downloaded, patched and compiled if you run
+`make everything`, and you can make just one with, for example, `make
+trivium.so`.
+
+
+tpy6/*                      [Eli Biham, Jennifer Seberry; UNKNOWN
+                             ("no royalty")]
+trivium/*                   [Christophe De Cannière; UNKNOWN]
+grain/*                     [Martin Hell, et. al.; free-ish]
+grain128/*                  [Martin Hell, et. al.; free-ish]
+hc_128/*                    [Hongjun Wu; UNKNOWN license]
+rabbit/*                    [Cryptico A/S; "solely for non-commercial
+                             purposes"]
+snow2/*                     [Patrik Ekdahl, Thomas Johansson; UNKNOWN]
+abc3                        [Vladimir Anashin, Andrey Bogdanov, Ilya
+                             Kizhvatov; unclear (BSD-ish)]
+phelix/*                    [Doug Whiting; Public domain]
+
+
+Notes about various generators
+==============================
+
+abc3 is version three of Anashin, Bogdanov, and Kizhvatov's ABC
+cipher. It is allegedly cryptographically weak, but that does not
+necessarily translate to statistical weakness.  It has a BSD-ish
+license that refers to the "cipher" rather than the software
+implementation itself.
+
+chacha8 by D.J. Be
+
+dSFMT is Mutsuo Saito and Makoto Matsumoto's double generating, SIMD
+oriented, successor to MT19937.  The included version has been patched
+by Andrea C G Mennucci to save and restore state, though this is not
+yet exposed to Python.
+
+dummyc always generates 0.5, for testing speed.
+
+ffcsrh is the F-FCSR-H stream cipher.  It was included in the final
+eSTREAM portfolio, only to be thrown out a few months later after a
+critical weakness was discovered.  This probably does not affect its
+statistical utility, though the cipher is designed for hardware, and
+its software performance is not compelling.  It has a very liberal
+license which explicitly mentions the reference implementation.
+
+grain and grain128.  These are hardware oriented ciphers with a
+liberal license that seems to be referring to the implementation as
+well as the algorithm.  It contains this clause: "You may include the
+Grain cipher in a licensed or patented product but the Grain cipher
+must then be excluded from the license or patent in question".  Their
+software performance is middling.
+
+hc_128 and hc128.  These use two different implementations of Hongjun
+Wu's HC-128 cipher (hc_128 is from eSTREAM and hc128 is from Wu's
+site).  They are both very fast and the cipher is unbroken.  The
+eSTREAM IP statement says the *cipher* is "not patented and are
+royalty free. Anyone can use HC-128 and HC-256 free of charge".  I can
+find no clear license for the reference software.
+
+Isaac and isaac64 are Bob Jenkins' fast cryptographic random number
+generators, as adapted/rewritten (I don't know which) by Tim
+Terriberry and included in the CCAN project.  Both Jenkins' and
+Terriberry's versions have been offered to the public domain.  Isaac64
+is very fast on my i5 reference machine.
+
+lcg is a classic (bad) linear congruential generator, with the formula
+x = 1103515245 * x_previous + 12345 % (2^31).  Apparently it serves as
+rand() in some libc's (though not glibc, which looks only slightly
+better).
+
+mt19937module.c is an exact copy of Python 3.1's _randommodule.c, with
+trivial changes to accommodate the change of name.
+
+phelix dropped out of eSTREAM due to moderate weaknesses which might
+not affect its role as a random number generator.  It is an
+authenticating cipher, meaning it calculates a sort of checksum as it
+encrypts and decrypts for sender and receiver to compare.  Thus it
+does more work than other stream ciphers, and this work is of little
+use for generating random numbers.  Nevertheless, it is not the
+slowest.
+
+rabbit is in the final eSTREAM portfolio.  During much of its eSTREAM
+career the algorithm was shackled to some patent, but in 2008 the
+authors decided to release it "into the public domain".  The eSTREAM
+reference implementation still carries a restrictive comment, though,
+perhaps because the code was finalised before it was freed.  The code,
+according to the same comment, "may be used solely for non-commercial
+purposes", but it is possible that has changed too.
+
+salsa20_8 and salsa20_12 are by D. J. Bernstein, who has declared them
+to be public domain.  The code variant used here is called "regs" in
+eSTREAM.  There are several optimised versions that are faster on
+their particular platforms, but none of them are portable.  The only
+real difference between the two is the number of salsa rounds they use
+(8 or 12, as you might expect).  Salsa20/8 seems to be regarded as
+cutting things fine for cryptographic work; it should be fine as a
+statistical random number generator.
+
+snow2, by Patrik Ekdahl and Thomas Johansson, was not an eSTREAM
+candidate, but was wrapped up in the eSTREAM API to serve as a
+benchmark.  It proved difficult to beat, with seemingly very few
+ciphers matching it for speed and security.  The algorithm is free but
+the code doesn't have an explicit license.
+
+sosemanuk-clean and sosemanuk2: Written by Thomas Pornin and possibly
+others, who describe the license as "as close to Public Domain as any
+software license can be under French law".  Sosemanuk-clean uses the
+native sosemanuk API, while sosemanuk2 uses the ecrypt API.
+
+tpy6 is one of many descendants of the eSTREAM candidate Py.  Py has
+been broken, but Tpy6 has not.  Tpy6 is quite quick.  Its contains the
+following comment: "The designers/authors of Py (pronounced Roo) keep
+their rights on the design and the name. However, no royalty will be
+necessary for use of Py, nor for using the submitted code."
+
+trivium is in eSTREAM's final selection of hardware-oriented ciphers,
+but it is also reasonably quick in software.  It has a smaller key
+than most others (80 bit), which doesn't matter for statistical
+purposes.  The cipher is "free available for any use", but it is
+unclear whether that applies to the reference code.
+
+eSTREAM
+
+
+Magically importable eSTREAM files
+==================================
+
+abc3
+ffcsrh
+hc_128
+junk
+phelix
+rabbit
+salsa20_12
+salsa20_8
+snow2
+sosemanuk2
+tpy6
+trivium
+grain128
+grain
+
+
+
+include/ecrypt-config.h
+include/ecrypt-machine.h
+include/ecrypt-portable.h
+
+hc128_opt32.h  by Hongjun Wu
+
+dSFMT.c
+dummy.py
+dummy2.py
+dummyc.c
+ecrypt_generic.c
+ecrypt_gsl_generic.c
+emitter.h
+emitters-test.sh
+estream_emitter.c
+example-config.h
+hc128.c
+
+isaac.c
+isaac64.c
+lcg.c
+misc.h
+mt19937module.c    (Python's BSD licensed random module by Takuji Nishimura, Makoto Matsumoto, Raymond Hettinger)
+random_helpers.h
+
+
+test.py
+urandom.py
+
+[trivium] http://www.ciphergoth.org/crypto/trivium/worlds-slowest-implementation
+[rabbit] http://www.ecrypt.eu.org/stream/phorum/read.php?1,1244
+[most] http://www.ecrypt.eu.org/stream/finalip.html
+
+http://cr.yp.to/streamciphers/attacks.html
+
+
+
+
+According to http://www.ecrypt.eu.org/stream/phase3ip.html (reproduced
+as text at licenses/phase3-ip-statements.txt)

@@ -1,0 +1,174 @@
+IP statements extracted from http://www.ecrypt.eu.org/stream/phase3ip.html
+
+Summary
+=======
+
+CryptMT    Free for any use if CryptMT Version 3 is in the eSTREAM final
+           portfolio (otherwise free for non-commercial use).
+DECIM      Partly patented, but freely available
+Dragon     Free for any use
+Edon80     Free for any use
+F-FCSR     Free for any use
+Grain      Free for any use
+HC         Free for any use
+LEX        Free for any use
+MICKEY     Free for any use
+Moustique  Free for any use
+NLS        Free for any use
+Pomaranch  Free for noncommercial use
+Rabbit     Free for any use
+Salsa20    Free for any use
+SOSEMANUK  Free for any use
+Trivium    Free for any use
+
+Statements
+==========
+
+   1. CryptMT
+      "CryptMT is patent-pending. Its property owners are Hiroshima University
+      and Ochanomizu University. However, the inventors had the following
+      permission from the owners:
+          o CryptMT is free for non-commercial use.
+          o If CryptMT is selected as one of the recommendable stream ciphers
+            by eSTREAM, then it is free even for commercial use.
+      " This was further committed to during a rerport made at SASC 2006, where
+      the IP owners Hiroshima University and Ochanomizu University promised
+      that if it stays in the final portfolio of eSTREAM ciphers, then they
+      will make it free for any purpose (i.e. abandon the profit).
+      This means that, if CryptMT Version 3 is one of the recommendable stream
+      cihpers in the final report of May 2008 (planned by eSTREAM), then it can
+      be used freely for any use, including commercial purposes.
+      On the other hand, if it did not stay in the final portfolio, then the IP
+      owners will not make it free (but it is free for non-commercial use).
+
+   2. DECIM
+      France Telecom beleives that the DECIM cipher is covered in part by a
+      patent application in co-ownership between France Telecom and
+      l'Universite de Caen Basse-Normandie (PCT/FT 04/0270, submitted August
+      2nd, 2004).
+      However, the inventors of DECIM wish that the DECIM cipher and the
+      provided reference implementations are and remain freely available, and
+      may be used for ayn purpose, including commercial exploitation, without
+      restriction.
+
+   3. Dragon
+      The Dragon algorithm is made freely available to all users, at their own
+      risk
+      The submitters undertake to update the Ecrypt Stream Cipher project when
+      necessary
+
+   4. Edon80
+      We hereby explicitly release any intellectual property rights to Edon80
+      into the public domain.
+
+   5. F-FCSR
+      The F-FCSR-H v2 and F-FCSR-16 stream ciphers are the intellectual
+      property of their inventors. This work is supported by the Université de
+      Limoges, the Centre National de la Recherche Scientifique and the
+      Institut National de la Recherche en Informatique et Automatisme.
+      To our knowledge, the F-FCSR-H v2 and F-FCSR-16 stream ciphers are not
+      based on any licensed, patented or otherwise legally restricted existing
+      work.
+      The inventors wish that the F-FCSR ciphers and the provided reference
+      implementations are and remains freely available, and may be used by
+      anyone for any purpose, including commercial exploitation, without
+      restriction.
+      The inventors also undertake the task to update the F-FCSR ciphers as
+      required by the ECRYPT Stream Cipher project when necessary.
+
+   6. Grain
+      The Grain stream cipher is Copyright © 2005, Martin Hell, Thomas
+      Johansson and Willi Meier. The Grain cipher is not based on any licence
+      or patents.
+      We hereby grant anybody licence to use, copy, modify or distribute the
+      Grain cipher under the following terms:
+          o You may not license or patent any intellectual work and/or product
+            based on a copy or a modification of the Grain cipher. You may
+            include the Grain cipher in a licensed or patented product but the
+            Grain cipher must then be excluded from the license or patent in
+            question.
+          o The copyright holders are not legally responsible for any damage
+            caused by the use of any product based on the Grain cipher.
+          o You may not use, copy, modify, or distribute the Grain cipher
+            except as expressly provided under this license. Any attempt
+            otherwise to use, copy, modify or distribute the Grain cipher is
+            void, and will automatically terminate your rights under this
+            license.
+      This license can only be made void by the copyright holders and the
+      ECRYPT NoE committee in agreement with the copyright holders.
+      The authors also undertake the task to update the Grain cipher as
+      required by the ECRYPT NoE committee.
+      (The IPR statement also applies to Grain v1 and Grain-128).
+
+   7. HC
+      The stream ciphers HC-128 and HC-256 are not patented and are royalty
+      free. Anyone can use HC-128 and HC-256 free of charge. And I would like
+      to update the ECRYPT Stream Cipher project when necessary.
+
+   8. LEX
+      Lex was put in public domain.
+
+   9. MICKEY
+      The designers of the algorithm do not claim any IPR over it, and make it
+      freely available for any purpose. To the best of our knowledge no one
+      else has any relevant IPR either. We will update the ECRYPT stream cipher
+      project coordinators if we ever discover any.
+      The original IP statements about MICKEY and MICKEY-128 remain valid for
+      the version 2.0 ciphers.
+
+  10. Moustique
+      I, Joan Daemen, do hereby declare that to the best of my knowledge the
+      practice of the algorithm I have submitted, known as MOUSTIQUE, may be
+      covered by the following U.S. and/or foreign patents: none.
+      I do hereby declare that I am aware of no patent applications which may
+      cover the practice of my submitted algorithm.
+
+  11. NLS
+      QUALCOMM Incorporated allows free and unrestricted use of any of its
+      intellectual property required to exercise the primitive, including use
+      of the provided source code. The designers are unaware of any
+      intellectual property owned by other parties that would impact on the use
+      of NLS. The designers undertake to inform the ECrypt Stream Cipher
+      project of any changes regarding the intellectual property claims
+      covering NLS.
+      The IPR statement applies to NLSv2 without change.
+
+  12. Pomaranch
+      The Pomaranch cipher is copyrighted by the submitters. Noncommercial use
+      is free of charge, and commercial use requires registration fees.
+      The complete IP statement is available here
+
+  13. Rabbit
+      Rabbit was released in late 2008 into the public domain by Cryptico A/S
+      (the company that designed the stream cipher), and may be used freely for
+      any purpose. See here.
+
+  14. Salsa20
+      My policy is that Salsa20 is free for everyone to use. I am not aware of
+      any patents or patent applications covering Salsa20. I will update the
+      ECRYPT Stream Cipher project when necessary.
+
+  15. SOSEMANUK
+      The Sosemanuk cipher and the provided reference implementations are
+      knowledge arising from a joint work carried out under the X-CRYPT
+      Project, supported by the Ministère de l'éducation Nationale, de la
+      Recherche et de la Technologie, France. Thus, Axalto S.A., France
+      Télécom, Cryptolog International, the Institut National de Recherche en
+      Informatique et en Automatique, the Centre National de la Recherche
+      Scientifique, the Université de Versailles Saint-Quentin-en-Yvelines and
+      the École Normale Supérieure have joint ownership of the Sosemanuk cipher
+      and its reference implementations.
+      To our knowledge, the Sosemanuk cipher is not based on any licensed,
+      patented or otherwise legally restricted existing work. The inventors of
+      Sosemanuk wish that the Sosemanuk cipher and the provided reference
+      implementations are and remain freely available, and may be used by
+      anyone for any purpose, including commercial exploitation, without
+      restriction. In particular, the inventors did not --­ and do not intend
+      to --­ license, patent or otherwise restrict neither the Sosemanuk
+      algorithm, nor any part of it, nor any implementation of it.
+      The inventors also undertake the task to update the Sosemanuk cipher as
+      required by the ECRYPT Stream cipher project when necessary.
+
+  16. Trivium
+      To the author's knowledge Trivium is not covered by any patent. Trivium
+      is also free available for any use.

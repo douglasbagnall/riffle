@@ -1,0 +1,47 @@
+Table extracted from
+http://www.ecrypt.eu.org/stream/papersdir/057.pdf
+
+
+               Algorithm         Submitted material
+Cipher         Patent/Condition  Restricted/Condition
+ABC            No                No
+Achterbahn     No                No
+CryptMT/Fubuki Yes   1           Yes  1
+DECIM          Yes   3           No
+DICING         No                No   4
+DRAGON         No                No
+EDON-80        No    1           No   1
+F-FCSR         No                No
+Frogbit        Yes   2           Yes  3
+Grain          No                No   4
+HC-256         No                No
+Hermes8        No                No   4
+LEX            No                Yes  1
+MAG            No                No
+MICKEY         No                No
+MICKEY-128     No                No
+Mir-1          No                No   4
+MOSQUITO       No                No
+NLS            No                No
+Phelix         No                No
+Polar Bear     No                No
+POMARANCH      No                No   4
+Py             No                No
+Rabbit         Yes    1          Yes  1
+Salsa20        No                No
+SFINKS         No                No
+SOSEMANUK      No                No
+SSS            No                No
+TRBDK3 YAEA    No     1          No   1
+Trivium        No                No
+TSC-3          No                No
+VEST           Yes    3          Yes  3
+WG             No                No
+Yamb           No                No
+ZK-Crypt       Yes    1          Yes  1
+
+1. Free for non-commercial use, otherwise contact submitter.
+2. U.S. restrictions, contact submitter.
+3. Contact submitter.
+4. If copyrighted material is included in any product, the material
+   must not be covered by licence or patent.
