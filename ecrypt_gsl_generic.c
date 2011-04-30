@@ -74,7 +74,7 @@ rand_set (void *vstate, unsigned long int s)
   int i;
   if (s == 0)
     s = 4357;   /* the default seed is 4357, following MT */
-  u8 seed[KEY_BYTES + IV_BYTES];
+  u8 seed[KEY_BYTES + IV_BYTES + 4];
   for (i = 0; i < KEY_BYTES + IV_BYTES; i++)
     {
       s = ((69069 * s) + 1);
