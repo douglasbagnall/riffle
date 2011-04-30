@@ -9,6 +9,7 @@ MAX_RUNS = 999
 DEFAULT_TEST = 'speed'
 
 FAST = [
+    'chacha8',
     'abc3',
     'ffcsrh',
     'phelix',

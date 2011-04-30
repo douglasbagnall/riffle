@@ -139,6 +139,7 @@ ESTREAM_DATA = tpy6:unknown:tpy6-fix-gcc-warnings.patch::submissions/py/tpy6 \
 	sosemanuk2:free::sosemanuk.c:submissions/sosemanuk \
 	salsa20_12:free:salsa20_12-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/12-rounds/regs \
 	salsa20_8:free:salsa20_8-shush-gcc-warning.patch:salsa.c:submissions/salsa20/reduced/8-rounds/regs \
+	chacha8:free::: \
 	ffcsrh:free:ffcsrh-add-keystream-bytes.patch:f-fcsr-h.c:submissions/f-fcsr/f-fcsr-h \
 	abc3:mixed::abc-v3.c:submissions/abc/v3 \
 
