@@ -9,7 +9,6 @@
 /* ---------------------------------------------------------------*/
 
 #include "Python.h"
-#include <time.h>               /* for seeding to current time */
 #include "phelix/ecrypt-sync-ae.h"
 #include "random_helpers.h"
 

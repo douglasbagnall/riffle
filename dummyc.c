@@ -9,7 +9,6 @@
 /* ---------------------------------------------------------------*/
 
 #include "Python.h"
-#include <time.h>               /* for seeding to current time */
 #include "random_helpers.h"
 
 //#define MODULE_ID lcg
