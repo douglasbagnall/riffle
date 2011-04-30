@@ -13,7 +13,7 @@
 #include "ecrypt-sync.h"
 
 #include "random_helpers.h"
-#define RESCUE_BITS 1
+#define RESCUE_BITS (DOUBLE_COERCION == COERCE_DSFMT)
 
 #ifndef MODULE_NAME
 #error define MODULE_NAME and possibly BUFFER_DOUBLES, KEY_BYTES, and IV_BYTES
