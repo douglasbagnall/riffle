@@ -82,6 +82,20 @@ extract_seed(PyObject *arg, u8 *seed, size_t seed_len){
     return 0;
 }
 
+#define RANDOM_DUMMY_STATE_SETTERS() \
+static PyObject *					\
+random_getstate(RandomObject *self)			\
+{							\
+    return NULL;					\
+}							\
+static PyObject *					\
+random_setstate(RandomObject *self, PyObject *state)		\
+{								\
+    return NULL;						\
+}								\
+
+
+
 
 #define RANDOM_CLASS_NEW() static PyObject * \
 random_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {\
