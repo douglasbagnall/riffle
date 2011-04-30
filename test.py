@@ -11,8 +11,6 @@ DEFAULT_TEST = 'speed'
 FAST = [
     'chacha8',
     'abc3',
-    'ffcsrh',
-    'phelix',
     'hc_128',
     'rabbit',
     'sosemanuk2',
@@ -37,6 +35,8 @@ SLOW = [
     'dummy2',
     'random',
     'isaac',
+    'ffcsrh',
+    'phelix',
     ]
 
 REALLY_SLOW = ['urandom',]
