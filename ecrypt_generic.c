@@ -85,12 +85,10 @@ static PyObject *
 random_seed(RandomObject *self, PyObject *args)
 {
     PyObject *arg = NULL;
+    u8 seed[KEY_BYTES + IV_BYTES];
 
     if (!PyArg_UnpackTuple(args, "seed", 0, 1, &arg))
         return NULL;
-
-    u8 seed[KEY_BYTES + IV_BYTES];
-    memset(seed, '#', sizeof(seed));
 
     if (extract_seed(arg, seed, sizeof(seed)) != 0){
 	return NULL;

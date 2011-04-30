@@ -57,6 +57,7 @@ urandomise_state(u8 *state, size_t len){
 
 UNUSED static int
 extract_seed(PyObject *arg, u8 *seed, size_t seed_len){
+    memset(seed, '#', seed_len);
     if (arg == NULL || arg == Py_None) {
 	/* try first with urandom, fall back to time */
 	if (urandomise_state(seed, seed_len) != 0){
