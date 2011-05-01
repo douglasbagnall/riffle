@@ -64,10 +64,9 @@ Notes about various generators
 ==============================
 
 abc3 is version three of Anashin, Bogdanov, and Kizhvatov's ABC
-cipher. It is allegedly cryptographically weak, but that does not
-necessarily translate to statistical weakness.  It has a BSD-ish
-license that refers to the "cipher" rather than the software
-implementation itself.
+cipher. It is allegedly cryptographically weak, and appears to have
+statistical problems too.  It has a BSD-ish license that refers to the
+"cipher" rather than the software implementation itself.
 
 chacha8 by D.J. Be
 
@@ -76,7 +75,7 @@ oriented, successor to MT19937.  The included version has been patched
 by Andrea C G Mennucci to save and restore state, though this is not
 yet exposed to Python.
 
-dummyc always generates 0.5, for testing speed.
+dummyc always generates 0.5, as a speed benchmark.
 
 ffcsrh is the F-FCSR-H stream cipher.  It was included in the final
 eSTREAM portfolio, only to be thrown out a few months later after a
