@@ -68,7 +68,11 @@ cipher. It is allegedly cryptographically weak, and appears to have
 statistical problems too.  It has a BSD-ish license that refers to the
 "cipher" rather than the software implementation itself.
 
-chacha8 by D.J. Be
+chacha8 is a decendant of Salsa20 family and, like them, has been put
+in the public domain by its author D.J. Benstein.  By altering a
+symlink in the chacha8 directory, you can choose between the "ref" and
+"regs" implementations.  "regs" is default, and slightly faster.
+Bernstein also offers several optimised, non-portable, versions.
 
 dSFMT is Mutsuo Saito and Makoto Matsumoto's double generating, SIMD
 oriented, successor to MT19937.  The included version has been patched
