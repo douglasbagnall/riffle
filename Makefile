@@ -64,8 +64,10 @@ ccan/configurator:
 config.h: ccan/configurator
 	ccan/configurator > $@
 
-testbits.h: testbits.py
-	testbits.py
+testbits.h: test-bits.py
+	./test-bits.py --header-only
+
+testbits.o: testbits.h
 
 isaac64.o isaac.o: config.h
 
@@ -104,8 +106,8 @@ isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
 hc128.so: hc128.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so mt19937module.so lcg.so
-SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so
+SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
+SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so phelix.so testbits.so
 free:: $(SPECIAL_MODULES)
 all:: free
 emitters::   	bin/sosemanuk-emitter

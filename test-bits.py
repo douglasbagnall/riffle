@@ -104,6 +104,8 @@ def run(values, double_coercion, rescue_bits=0):
 def main():
     values = raw_values()
     write_c_header(values)
+    if '--header-only' in sys.argv:
+        return
     for dc, rescue in ((0, 1), #with rescue bits
                        (0, 0),
                        (1, 0),

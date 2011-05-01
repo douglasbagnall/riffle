@@ -15,3 +15,4 @@ ccan/configurator
 bin/
 test-results
 */unverified.test-vectors
+testbits.h
