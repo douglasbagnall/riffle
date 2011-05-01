@@ -64,6 +64,9 @@ ccan/configurator:
 config.h: ccan/configurator
 	ccan/configurator > $@
 
+testbits.h: testbits.py
+	testbits.py
+
 isaac64.o isaac.o: config.h
 
 DSFMT_FLAGS =  -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800  -Wmissing-prototypes  -std=c99

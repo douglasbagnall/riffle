@@ -41,9 +41,11 @@ SLOW = [
 
 REALLY_SLOW = ['urandom',]
 
+TEST = ['testbits',]
+
 DEFAULT = FAST
 MOST = DEFAULT + SLOW
-ALL = DEFAULT + SLOW + REALLY_SLOW
+ALL = DEFAULT + SLOW + REALLY_SLOW + TEST
 
 #test fuctions borrowed from standard random module
 def _test_generator(n, func, args):
