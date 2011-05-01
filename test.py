@@ -29,6 +29,7 @@ FAST = [
     ]
 
 SLOW = [
+    'xxtea',
     'grain',
     'grain128',
     'dummy',
