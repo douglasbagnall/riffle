@@ -16,12 +16,16 @@ below), or that work badly or slowly:
 
 $ make everything
 
+That will download various generators from the eSTREAM site, unless
+you have got them already.
+
 To make executable binaries that output streams of random bytes (look
 in ./bin, use --help):
 
 $ make emitters
 
-To make GSL modules (completely useless, but there you go):
+To compile the generators in GSL wrappers (completely useless, because
+GSL won't know they're there), check you have GSL headers and:
 
 $ make gsl
 
