@@ -25,6 +25,34 @@ To make GSL modules (completely useless, but there you go):
 
 $ make gsl
 
+Testing
+=======
+
+./test.py can perform a few simple tests.  Look at `./test.py --help`
+for options.  By default it tests a selection of generators for speed,
+but it takes quite a few options.
+
+./test-bits.py tests internal routines for coercing integers into
+floating point numbers.  If everything is working well, it won't say
+much.
+
+After `make emitters`, the bin/*-emitter files can be used to test
+generators using, say, dieharder.  To do that, install dieharder, then:
+
+dieharder -g -1
+
+and look for stdin_input_raw (200 for me, but it changes).  Then
+
+bin/sosemanuk-emitter | dieharder -g 200 -a
+
+will take an age doing a large number of tests.  There will be a
+number of false alarms: dieharder raises the alarm when something
+happens that has a probability of less than 5%, but it does more than
+20 tests, so some warnings are to be expected.  To retest a failing
+test with a different seed:
+
+bin/sosemanuk-emitter -s 42 | dieharder -g 200 -r 2
+
 
 Copyright and Licenses
 ======================
@@ -251,9 +279,6 @@ urandom.py
 [most] http://www.ecrypt.eu.org/stream/finalip.html
 
 http://cr.yp.to/streamciphers/attacks.html
-
-
-
 
 According to http://www.ecrypt.eu.org/stream/phase3ip.html (reproduced
 as text at licenses/phase3-ip-statements.txt)
