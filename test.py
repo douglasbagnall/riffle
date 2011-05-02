@@ -93,7 +93,7 @@ def monkey_rng(module, seed=None):
     import random
     wrapper = random.Random()
     rng = module.Random()
-    rng.seed(seed)
+    rng.seed(seed if seed is not None else 2)
     for a in ('random', 'seed', 'getstate', 'setstate'):
         setattr(wrapper, a, getattr(rng, a))
     try:
@@ -113,14 +113,14 @@ def test_variants(module, N=10000):
     elapsed = time.time() - start
     print("Module %s took %s seconds" % (module, elapsed))
 
-def test_sum(module, N=1000000, cycles=5):
+def test_sum(module, N=1000000, cycles=5, seed=2):
     m = __import__(module)
     best = 1e999
     old_total = None
     rng = m.Random()
     r = rng.random
     for cycle in range(cycles):
-        rng.seed(2)
+        rng.seed(seed)
         start = time.time()
         total = sum(r() for x in range(N))
         elapsed = time.time() - start
@@ -135,14 +135,14 @@ def test_sum(module, N=1000000, cycles=5):
           (module, N, cycles, total, best))
     return (best * NORMALISED_N / N)
 
-def test_histogram(module, N=1000000, buckets=10, cycles=None):
+def test_histogram(module, N=1000000, buckets=10, cycles=None, seed=2):
     m = __import__(module)
     if isinstance(cycles, int):#hack around simple api
         buckets = cycles
     rng = m.Random()
     r = rng.random
     h = [0] * buckets
-    rng.seed(2)
+    rng.seed(seed)
     _int = int
     start = time.time()
     for i in range(N//2):
@@ -175,14 +175,14 @@ def test_histogram(module, N=1000000, buckets=10, cycles=None):
     print()
     return (elapsed * NORMALISED_N / N)
 
-def test_speed(module, N=10000000, cycles=5):
+def test_speed(module, N=10000000, cycles=5, seed=2):
     m = __import__(module)
     best = 1e999
     old_total = None
     rng = m.Random()
     r = rng.random
     for cycle in range(cycles):
-        rng.seed(2)
+        rng.seed(seed)
         start = time.time()
         for x in range(0, N, 25):
             r();r();r();r();r()
@@ -197,7 +197,7 @@ def test_speed(module, N=10000000, cycles=5):
           (module, N, cycles, best))
     return (best * NORMALISED_N / N)
 
-def test_print(module, N=None, cycles=None):
+def test_print(module, N=None, cycles=None, seed=2):
     if N is None:
         if cycles is not None:
             N = cycles
@@ -206,7 +206,7 @@ def test_print(module, N=None, cycles=None):
     m = __import__(module)
     rng = m.Random()
     r = rng.random
-    rng.seed(2)
+    rng.seed(seed)
     for x in range(N):
         print (r(), end=' ')
     print()
@@ -240,7 +240,7 @@ def usage():
         elif k.startswith('test_'):
             tests.append(k[5:])
     groups.sort()
-    print("USAGE:\n%s [generators | generator groups | tests | iterations per test | test runs]\n"
+    print("USAGE:\n%s [generators | groups | tests | iterations per test | test runs | +seed]\n"
           % (sys.argv[0],))
     print("generators groups are")
     for k, v in groups:
@@ -251,8 +251,12 @@ def usage():
     print()
     print(textwrap.fill("tests are: %s." % (', '.join(tests))))
     print("The default test is %s\n" % (DEFAULT_TEST))
+    print(textwrap.fill("A string prefixed with '+' is used to seed the generators "
+                        "(the '+' is dropped).  If possible the string is interpreted as an integer."))
+    print()
     print(textwrap.fill("Any number over %s sets the iterations "
                         "per test (defaults are test dependant)." % MAX_RUNS))
+    print()
     print(textwrap.fill("Numbers less than %s set the number of runs, or for the histogram test, "
                         "the nyumber of buckets (defaults are test dependant)." % (MAX_RUNS + 1)))
     print()
@@ -272,6 +276,7 @@ def main():
     unknown = []
     N = None
     runs = None
+    seed = None
     G = globals()
 
     for x in args:
@@ -289,6 +294,11 @@ def main():
             tests.append(G['test_' + x])
         elif x in ALL:
             generators.append(x)
+        elif x.startswith('+'):
+            try:
+                seed = int(x[1:])
+            except ValueError:
+                seed = x[1:]
         else:
             unknown.append(x)
 
@@ -300,7 +310,9 @@ def main():
     if unknown:
         print("Unknown generators: %s" % (', '.join(unknown)))
         print('try --help for hints')
-    kwargs = dict((k, v) for k, v in (('N', N), ('cycles', runs))
+    kwargs = dict((k, v) for k, v in (('N', N),
+                                      ('cycles', runs),
+                                      ('seed', seed))
                   if v is not None)
 
     for x in tests:
