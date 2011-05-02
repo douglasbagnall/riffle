@@ -66,7 +66,7 @@ def _test_generator(n, func, args):
     t1 = time.time()
     print(round(t1-t0, 3), 'sec,', end=' ')
     avg = total/n
-    stddev = (sqsum/n - avg*avg) ** 0.5
+    stddev = max(sqsum/n - avg*avg, 0) ** 0.5
     print('avg %g, stddev %g, min %g, max %g' % \
               (avg, stddev, smallest, largest))
 
