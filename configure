@@ -1,0 +1,7 @@
+#! /bin/sh
+
+echo "This doesn't configure anything!"
+echo
+echo "It is here to comfort people who run ./configure reflexively."
+echo
+echo "read README, or just try 'make' and see what fails."
