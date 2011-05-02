@@ -164,6 +164,14 @@ than most others (80 bit), which doesn't matter for statistical
 purposes.  The cipher is "free available for any use", but it is
 unclear whether that applies to the reference code.
 
+xxtea encodes a buffer using the XXTEA cipher, then normalises the
+buffer to a series of floating point numbers.  For the next round, it
+encodes the normalised buffer.  Whether or not this is a sound
+procedure, it is not particularly fast.  The XXTEA implementation was
+adapted from Wikipedia, which is turn derived from David Wheeler and
+Roger Needham's public domain original.
+
+
 eSTREAM
 
 
