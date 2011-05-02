@@ -104,10 +104,10 @@ def monkey_rng(module, seed=None):
     return wrapper
 
 
-def test_variants(module, N=10000):
+def test_variants(module, N=10000, seed=2):
     print(module)
     m = __import__(module)
-    rng = monkey_rng(m, 1)
+    rng = monkey_rng(m, seed)
     start = time.time()
     _test(rng)
     elapsed = time.time() - start
