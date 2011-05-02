@@ -29,6 +29,12 @@ GSL won't know they're there), check you have GSL headers and:
 
 $ make gsl
 
+Configuring
+===========
+
+* float conversion
+* bit rescue
+
 Testing
 =======
 
@@ -286,3 +292,39 @@ http://cr.yp.to/streamciphers/attacks.html
 
 According to http://www.ecrypt.eu.org/stream/phase3ip.html (reproduced
 as text at licenses/phase3-ip-statements.txt)
+
+
+
+Results
+=======
+
+Normalised time (10000000 iterations)
+dummyc         0.238  *********
+lcg            0.247  **********
+dSFMT          0.249  **********
+isaac64        0.300  ************
+hc_128         0.304  ************
+abc3           0.320  *************
+tpy6           0.339  **************
+hc128          0.341  **************
+snow2          0.342  **************
+chacha8        0.343  **************
+salsa20_8      0.344  **************
+trivium        0.353  **************
+random         0.369  ***************
+mt19937        0.373  ***************
+rabbit         0.374  ***************
+salsa20_12     0.381  ***************
+sosemanuk2     0.382  ***************
+sosemanuk      0.391  ****************
+dummy2         0.422  *****************
+phelix         0.486  ********************
+grain128       0.487  ********************
+xxtea          0.648  **************************
+isaac          0.672  ***************************
+dummy          0.876  ************************************
+ffcsrh         1.077  ********************************************
+grain          1.213  **************************************************
+
+urandom        92.02  **************************************************...
+
