@@ -1,6 +1,29 @@
 These are experiments with using stream ciphers as random number
 generators in Python.
 
+Building the software
+=====================
+
+To compile python modules:
+
+$ make
+
+You will need the Python3 headers (called "python3-dev" or
+"python3-devel" by most Linux package managers).
+
+To also compile generators that have unclear or unfree licenses (see
+below), or that work badly or slowly:
+
+$ make everything
+
+To make executable binaries that output streams of random bytes (look
+in ./bin, use --help):
+
+$ make emitters
+
+To make GSL modules (completely useless, but there you go):
+
+$ make gsl
 
 
 Copyright and Licenses
@@ -44,7 +67,6 @@ somewhat broken as ciphers, or their performance is uninteresting.
 However, they will all be downloaded, patched and compiled if you run
 `make everything`, and you can make just one with, for example, `make
 trivium.so`.
-
 
 tpy6/*                      [Eli Biham, Jennifer Seberry; UNKNOWN
                              ("no royalty")]
@@ -150,7 +172,7 @@ the code doesn't have an explicit license.
 sosemanuk-clean and sosemanuk2: Written by Thomas Pornin and possibly
 others, who describe the license as "as close to Public Domain as any
 software license can be under French law".  Sosemanuk-clean uses the
-native sosemanuk API, while sosemanuk2 uses the ecrypt API.
+native Sosemanuk API, while sosemanuk2 uses the ecrypt API.
 
 tpy6 is one of many descendants of the eSTREAM candidate Py.  Py has
 been broken, but Tpy6 has not.  Tpy6 is quite quick.  Its contains the
