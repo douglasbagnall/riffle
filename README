@@ -37,7 +37,10 @@ below), or that work badly or slowly::
 $ make everything
 
 That will download various generators from the eSTREAM site, unless
-you have got them already.
+you have got them already.  If you hate getting asked y/N questions,
+use
+
+$ ECRYPT_NO_QUESTIONS=no-questions make everything
 
 To make executable binaries that output streams of random bytes (look
 in ./bin, use --help)::
