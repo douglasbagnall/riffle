@@ -41,7 +41,7 @@ if [ "$2" != "no-questions" ]; then
     echo I can try to replace the whole $STEM directory with a copy
     echo from the estream repository.  That involves fetching a tarball, untarring it,
     echo and possibly patching it a bit.
-    echo "Do this now (y/N)? [to avoid this, use $ ECRYPT_NO_QUESTIONS=no-questions make ...]"
+    echo 'Do this now (y/N)? [to avoid this, use `ECRYPT_NO_QUESTIONS=no-questions make ...`]'
     read x && [ "Xy" = "X$x" ]  || exit 99
     echo "good! here goes"
 fi
