@@ -1,6 +1,6 @@
 /* Copyright 2011 Douglas Bagnall <douglas@paradise.net.nz> MIT License
  *
- * A Riffle wrapper for eSTREAM syncronous stream ciphers.  To use this on a
+ * A Riffle wrapper for eSTREAM synchronous stream ciphers.  To use this on a
  * new cipher, you need to do this:
  *
  * 1. Copy the relevant files into a directory with the name you want for the
@@ -46,7 +46,7 @@
  *    contents of the chacha8 directory are already appropriately named and
  *    patched.
  *
- * This file was orignally based on Python 3.1's original randommodule.c,
+ * This file was originally based on Python 3.1's original randommodule.c,
  * which was in turn based on Takuji Nishimura and Makoto Matsumoto's MT19937
  * code and adapted to Python by Raymond Hettinger.  No trace of MT19937
  * remains here, and most of the Python boilerplate has been moved to
