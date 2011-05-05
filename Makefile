@@ -61,6 +61,9 @@ debug:
 ccan/configurator:
 	$(CC) $@.c -o $@
 
+README.html: README
+	rst2html $< $@
+
 config.h: ccan/configurator
 	ccan/configurator > $@
 
