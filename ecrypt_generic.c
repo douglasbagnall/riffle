@@ -1,12 +1,75 @@
-/* Based on Python 3.1's original randommodule.c, which was in turn based on
-   Takuji Nishimura and Makoto Matsumoto's MT19937 code.  However, the parts
-   of randommodule.c that remain in this file are almost certainly not from
-   Nishimura and Matsumoto, rather they are the adaptations and boilerplate to
-   match Python's Random() interface, and were seemingly mostly written by
-   Raymond Hettinger in 2002.
-*/
-
-/* ---------------------------------------------------------------*/
+/* Copyright 2011 Douglas Bagnall <douglas@paradise.net.nz> MIT License
+ *
+ * A Riffle wrapper for eSTREAM syncronous stream ciphers.  To use this on a
+ * new cipher, you need to do this:
+ *
+ * 1. Copy the relevant files into a directory with the name you want for the
+ *    eventual python module (so, no hyphens, dots, etc, which break python
+ *    syntax).  There is always a <something>.c file and ecrypt-sync.h, and
+ *    sometimes there's more.
+ *
+ * 2. Rename the main C file after the module.  That is, if your module will
+ *    be foo, you directory is foo, and the C file is foo/foo.c (vs, say,
+ *    foo-128.c).
+ *
+ * 3. Make sure the file has an ECRYPT_keystream_bytes function (as defined in
+ *    ecrypt-sync.h).  Some ciphers have this already.  Some (e.g. DJB's ones)
+ *    have a suboptimal implementation.  For most it is quite simple to write:
+ *    their ECRYPT_encrypt_bytes function generate keystream which is xored
+ *    with the input.  If you start in the middle and change the bit that goes
+ *    'output[i] = input[i] ^ keystream[i]' to 'output[i] = keystream[i]',
+ *    then work outwards deleting unused variables, you have it.  You can also
+ *    skip the special case loop for finishing odd-sized chunks -- assume the
+ *    wrapper always wants at least 32 bytes at a time.
+ *
+ * 4. Create a patch of your changes (if any).  Actually, the patch should
+ *    apply to the C file in its original name, so steps 3 and 4 really come
+ *    before 2.  But the patch file is optional -- you don't need it to get
+ *    things working -- so you'll end up doing it this way and munging the
+ *    patch afterwards.
+ *
+ * 5. Add your cipher to the ESTREAM_DATA variable in the Makefile.  This
+ *    consists of 5 colon-separated fields.  First is the name of the
+ *    directory you made in step 1, and is used as a stem for various files.
+ *    The second is a one word summary of its license, either "free",
+ *    "unknown", "mixed", or "non-free".  The only distinction that matters so
+ *    far is "free" vs anything else: free modules always get built by "make
+ *    all", while the others don't unless the code is there.  To fetch those
+ *    ones, you need to use "make everything".  The third field is the
+ *    filename of the patch (if any).  The fourth field is the name of the
+ *    file that needs to be renamed to <stem>.c (in the example above,
+ *    "foo-128.c").  Then last is path to the original directory in the
+ *    eSTREAM subversion repository, treating /trunk/ as root. See here:
+ *    http://www.ecrypt.eu.org/stream/svn/viewcvs.cgi/ecrypt/trunk/ .  You
+ *    don't need much of this if you don't intend the cipher to be downloaded
+ *    on demand.  A minimal example is "chacha8:free:::", which assumes the
+ *    contents of the chacha8 directory are already appropriately named and
+ *    patched.
+ *
+ * This file was orignally based on Python 3.1's original randommodule.c,
+ * which was in turn based on Takuji Nishimura and Makoto Matsumoto's MT19937
+ * code and adapted to Python by Raymond Hettinger.  No trace of MT19937
+ * remains here, and most of the Python boilerplate has been moved to
+ * macros in random_helpers.h.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * The Software is provided "as is", WITHOUT WARRANTY of any kind, express or
+ * implied, including but not limited to the warranties of merchantability,
+ * fitness for a particular purpose and noninfringement. in no event shall the
+ * authors or copyright holders be liable for any claim, damages or other
+ * liability, whether in an action of contract, tort or otherwise, arising from,
+ * out of or in connection with the software or the use or other dealings in
+ * the Software.
+ */
 
 #include "Python.h"
 

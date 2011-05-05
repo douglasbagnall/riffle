@@ -386,6 +386,12 @@ Wikipedia: "a riffle is a short, relatively shallow and coarse-bedded
 length of stream over which the stream flows at lower velocity and
 higher turbulence".
 
+Adding new generators
+=====================
+
+To add new synchronous ciphers from the eSTREAM collection, read the
+instructions at the top of ecrypt_generic.c.  There is a chance that
+all you need to do is add a line to the Makefile.
 
 To do
 =====
