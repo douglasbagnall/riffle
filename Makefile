@@ -168,6 +168,12 @@ ECRYPT_DODGY = $(foreach x,$(ESTREAM_DATA),$(if $(findstring :free:, $x),,$(firs
 ECRYPT_FREE =  $(foreach x,$(ESTREAM_DATA),$(if $(findstring :free:, $x),$(firstword $(subst :, ,$(x)))))
 ECRYPT_EXISTING_DODGY_SO = $(filter $(subst /ecrypt-sync.h,.so, $(wildcard */ecrypt-sync.h)), $(ECRYPT_DODGY:=.so))
 ECRYPT_FREE_SO = $(ECRYPT_FREE:=.so)
+ECRYPT_FREE_GSL_SO = $(ECRYPT_FREE:=-gsl.so)
+ECRYPT_FREE_EMITTER = $(patsubst %,bin/%-emitter,$(ECRYPT_FREE))
+
+ECRYPT_EXISTING_DODGY_GSL_SO = $(ECRYPT_EXISTING_DODGY_SO:.so=-gsl.so)
+ECRYPT_EXISTING_DODGY_EMITTER = $(patsubst %.so,bin/%-emitter,$(ECRYPT_EXISTING_DODGY_SO))
+
 
 .PHONY: emitters gsl objects  emitter-test test123
 
@@ -177,8 +183,8 @@ test123:
 	@echo dodgy, existing: $(ECRYPT_EXISTING_DODGY_SO)
 
 objects::     $(ECRYPT_O)
-gsl::         $(ECRYPT_GSL_SO)
-emitters::    $(ECRYPT_EMITTER)
+gsl::         $(ECRYPT_FREE_GSL_SO) $(ECRYPT_EXISTING_DODGY_GSL_SO)
+emitters::    $(ECRYPT_FREE_EMITTER) $(ECRYPT_EXISTING_DODGY_EMITTER)
 all::	      $(ECRYPT_FREE_SO) $(ECRYPT_EXISTING_DODGY_SO)
 everything::  $(ECRYPT_SO)
 
