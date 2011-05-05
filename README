@@ -89,35 +89,6 @@ This can be turned off by compiling with::
 
 $ cflags='-DRESCUE_BITS=0' make
 
-Testing
-=======
-
-*./test.py* can perform a few simple tests.  Look at ``./test.py --help``
-for options.  By default it tests a selection of generators
-for speed, but it takes quite a few options.
-
-*./test-bits.py* tests internal routines for coercing integers into
-floating point numbers.  If everything is working well, it won't say
-much.
-
-After ``make emitters``, the ``bin/*-emitter`` files can be used to test
-generators using, say, dieharder.  To do that, install dieharder,
-then::
-
-$ dieharder -g -1
-
-and look for stdin_input_raw (200 for me, but it changes).  Then::
-
-$ bin/sosemanuk-emitter | dieharder -g 200 -a
-
-will take an age doing a large number of tests.  There will be a
-number of false alarms: dieharder raises the alarm when something
-happens that has a probability of less than 5%, but it does more than
-20 tests, so some warnings are to be expected.  To retest a failing
-test with a different seed::
-
-$ bin/sosemanuk-emitter -s 42 | dieharder -g 200 -r 2
-
 
 Copyright and Licenses
 ======================
@@ -331,7 +302,64 @@ procedure, it is not particularly fast.  The XXTEA implementation was
 adapted from Wikipedia, which is turn derived from David Wheeler and
 Roger Needham's public domain original.
 
+Python API
+==========
 
+The Python module code is based on Python's standard ``_random``
+module (the secret C module behind the public ``random`` module), and
+uses the Random class API as officially documented_, with omissions.
+The full API is described in this paragraph:
+
+.. _documented: http://docs.python.org/py3k/library/random.html
+
+  Class ``Random`` can also be subclassed if you want to use a
+  different basic generator of your own devising: in that case,
+  override the ``random()``, ``seed()``, ``getstate()``, and
+  ``setstate()`` methods. Optionally, a new generator can supply a
+  ``getrandbits()`` method -- this allows randrange() to produce
+  selections over an arbitrarily large range.
+
+Most of the modules here omit the optional ``getrandbits()``, and have
+stub ``getstate()`` and ``setstate()`` methods that raise exceptions
+rather than save or restore state (none of this would be hard to fix).
+
+Testing
+=======
+
+*./test.py* can perform a few simple tests.  Look at ``./test.py --help``
+for options.  By default it tests a selection of generators
+for speed, but it takes quite a few options.
+
+*./test-bits.py* tests internal routines for coercing integers into
+floating point numbers.  If everything is working well, it won't say
+much.  Don't trust it excessively: there is a certain circularity in
+the way it works.
+
+After ``make emitters``, the ``bin/*-emitter`` files can be used to test
+generators using, say, dieharder.  To do that, install dieharder,
+then::
+
+$ dieharder -g -1
+
+and look for stdin_input_raw (200 for me, but it changes).  Then::
+
+$ bin/sosemanuk-emitter | dieharder -g 200 -a
+
+will take an age doing a large number of tests.  There will be a
+number of false alarms: dieharder raises the alarm when something
+happens that has a probability of less than 5%, but it does more than
+20 tests, so some warnings are to be expected.  To retest a failing
+test with a different seed::
+
+$ bin/sosemanuk-emitter -s 42 | dieharder -g 200 -r 2
+
+You can also use the emitters to test the raw speed of the generators,
+without Python and number conversion overhead.  For example::
+
+$ time bin/salsa20_8-emitter -b 500M > /dev/null
+
+will tell you how long it takes to send 500 random Megabytes to
+/dev/null.
 
 Test results
 ============
@@ -366,8 +394,10 @@ to generate 10000000 numbers on an i5-540 (best of 5 runs)::
  ffcsrh         1.077  ********************************************
  grain          1.213  **************************************************
 
- urandom        92.02  **************************************************...
+ urandom        92.02  **************************************************[...]*
 
+These are the Python times: you can deduce from the dummyc result that
+the Python overhead dwarfs the time taken by most generators.
 
 I haven't done extensive tests of generator quality, but it does seem that:
 
@@ -379,12 +409,15 @@ I haven't done extensive tests of generator quality, but it does seem that:
 
 * the others are at least superficially good.
 
+
 The name
 ========
 
-Wikipedia: "a riffle is a short, relatively shallow and coarse-bedded
+Wikipedia_: "a riffle is a short, relatively shallow and coarse-bedded
 length of stream over which the stream flows at lower velocity and
 higher turbulence".
+
+.. _Wikipedia: http://en.wikipedia.org/wiki/Riffle
 
 Adding new generators
 =====================
@@ -393,11 +426,24 @@ To add new synchronous ciphers from the eSTREAM collection, read the
 instructions at the top of ecrypt_generic.c.  There is a chance that
 all you need to do is add a line to the Makefile.
 
+Hacking
+=======
+
+The most complicating thing is probably that, due to the essential
+similarity of each Python random module, there is a lot of
+repetition. Then to ameliorate that, there is quite a bit of Makefile
+and pre-processor trickery that pulls each module together from
+various files.
+
 To do
 =====
 
 * More ciphers (AES, panama, cryptmt).
 
-* non-cipher generators
+* Non-cipher generators.
 
-* testing.
+* Testing.
+
+* Add gen_rand_bits and state storage and retrieval to Python modules.
+
+* Consolidate non-ecrypt generators a bit.
