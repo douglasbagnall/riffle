@@ -413,11 +413,11 @@ I haven't done extensive tests of generator quality, but it does seem that:
 The name
 ========
 
-Wikipedia_: "a riffle is a short, relatively shallow and coarse-bedded
+`Wikipedia`__: "a riffle is a short, relatively shallow and coarse-bedded
 length of stream over which the stream flows at lower velocity and
 higher turbulence".
 
-.. _Wikipedia: http://en.wikipedia.org/wiki/Riffle
+.. __: http://en.wikipedia.org/wiki/Riffle
 
 Adding new generators
 =====================
