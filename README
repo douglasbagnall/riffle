@@ -162,6 +162,7 @@ Here is a summary::
  sosemanuk-clean/*           [Thomas Pornin; MIT-ish]
  sosemanuk2/*                [Thomas Pornin; MIT-ish]
  ffcsrh/*                    [FCSR project; "no restriction"]
+ phelix/*                    [Doug Whiting; Public domain]
 
 The following directories are *not* distributed with this software,
 either because they have indistinct or non-free licenses, they are
@@ -183,7 +184,6 @@ trivium.so`.
  snow2/*                     [Patrik Ekdahl, Thomas Johansson; UNKNOWN]
  abc3                        [Vladimir Anashin, Andrey Bogdanov, Ilya
                               Kizhvatov; unclear (BSD-ish)]
- phelix/*                    [Doug Whiting; Public domain]
 
 
 Notes about various generators
