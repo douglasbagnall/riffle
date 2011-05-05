@@ -28,8 +28,6 @@
    Raymond Hettinger in 2002.
 */
 
-/* ---------------------------------------------------------------*/
-
 #include "Python.h"
 #include "random_helpers.h"
 #include "ccan/isaac/isaac64.h"
@@ -50,8 +48,6 @@ typedef struct {
 static PyTypeObject Random_Type;
 
 #define RandomObject_Check(v)      (Py_TYPE(v) == &Random_Type)
-
-/* Random methods */
 
 /* random_random return a double in the range [0, 1).
 */

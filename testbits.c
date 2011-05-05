@@ -31,8 +31,6 @@
    Raymond Hettinger in 2002.
 */
 
-/* ---------------------------------------------------------------*/
-
 #include "Python.h"
 #include <stdint.h>
 #include "random_helpers.h"

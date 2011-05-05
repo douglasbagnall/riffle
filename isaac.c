@@ -28,8 +28,6 @@
    Raymond Hettinger in 2002.
 */
 
-/* ---------------------------------------------------------------*/
-
 #include "Python.h"
 #include "random_helpers.h"
 #include "ccan/isaac/isaac.h"

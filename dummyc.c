@@ -28,12 +28,9 @@
    Raymond Hettinger in 2002.
 */
 
-/* ---------------------------------------------------------------*/
-
 #include "Python.h"
 #include "random_helpers.h"
 
-//#define MODULE_ID lcg
 #define MODULE_NAME dummyc
 
 typedef struct {
@@ -44,8 +41,6 @@ static PyTypeObject Random_Type;
 
 #define RandomObject_Check(v)      (Py_TYPE(v) == &Random_Type)
 
-/* Random methods */
-
 /* random_random return a double in the range [0, 1).
  * In this case it happens to be 0.5.
 */
@@ -54,12 +49,6 @@ random_random(RandomObject *self)
 {
     return PyFloat_FromDouble(0.5);
 }
-
-
-/*
- * The rest is Python-specific code, neither part of, nor derived from, the
- * Twister download.
- */
 
 static PyObject *
 random_seed(RandomObject *self, PyObject *args)
