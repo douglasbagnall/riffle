@@ -10,9 +10,10 @@ junk/
 estream/
 sha3/
 config.h
-*_pipe
 ccan/configurator
 bin/
 test-results
 */unverified.test-vectors
 testbits.h
+README.html
+abc3/
