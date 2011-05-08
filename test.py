@@ -203,7 +203,11 @@ def test_histogram(module, N=1000000, buckets=10, cycles=None, seed=2):
     return (elapsed * NORMALISED_N / N)
 
 def test_speed(module, N=10000000, cycles=5, seed=2):
-    m = __import__(module)
+    try:
+        m = __import__(module)
+    except ImportError as e:
+        print(e)
+        return
     best = 1e999
     old_total = None
     rng = m.Random()
@@ -244,9 +248,11 @@ def _test_several(test=test_speed, generators=None, **kwargs):
         generators = DEFAULT
     results = {}
     for x in generators:
-        results[x] = test(x, **kwargs)
+        r = test(x, **kwargs)
+        if r is not None:
+            results[x] = r
 
-    if None not in results.values():
+    if results:
         ordered = sorted((v, k) for k, v in results.items())
         print("Normalised time (%d iterations)" % (NORMALISED_N,))
         slowest = max(ordered)[0]
