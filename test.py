@@ -35,6 +35,7 @@ MAX_RUNS = 999
 DEFAULT_TEST = 'speed'
 
 FAST = [
+    'dSFMT521',
     'chacha8',
     'abc3',
     'hc_128',

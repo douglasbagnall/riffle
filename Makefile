@@ -35,7 +35,7 @@ PYTHON = python$(PY_VERSION)
 PY_FLAGS =  -pthread -DNDEBUG  -fwrapv -Wstrict-prototypes  -I/usr/include/$(PYTHON) -fPIC
 #-DPy_BUILD_CORE
 
-ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
+ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DHAVE_SSE2 -I.
 
 #drop some PY_FLAGS
 EXE_CFLAGS = -march=native -O3 -g  -fwrapv -Wstrict-prototypes -fPIC $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
@@ -57,7 +57,7 @@ dist-clean: clean
 really-dist-clean: dist-clean
 	rm -rf $(ECRYPT_DODGY)
 .c.o:
-	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
+	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DDSFMT_MEXP=19937 -o $@ $<
 
 %.so:	%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
@@ -90,9 +90,18 @@ isaac64.o isaac.o: config.h
 DSFMT_FLAGS =  -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800  -Wmissing-prototypes  -std=c99
 
 dSFMT/dSFMT.o: dSFMT/dSFMT.c
-	$(CC)  $(DSFMT_FLAGS)  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+	$(CC)  $(DSFMT_FLAGS)  -MD $(ALL_CFLAGS) -DDSFMT_MEXP=19937   -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
 dSFMT.so: dSFMT/dSFMT.o dSFMT.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+dSFMT521.o: dSFMT.c
+	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DDSFMT_MEXP=521 -o $@ $<
+
+dSFMT/dSFMT521.o: dSFMT/dSFMT.c
+	$(CC)  $(DSFMT_FLAGS)  -MD $(ALL_CFLAGS) -DDSFMT_MEXP=521  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+dSFMT521.so: dSFMT/dSFMT521.o dSFMT521.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 phelix/phelix.o: phelix/phelix.c
