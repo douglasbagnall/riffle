@@ -26,7 +26,9 @@
  *    apply to the C file in its original name, so steps 3 and 4 really come
  *    before 2.  But the patch file is optional -- you don't need it to get
  *    things working -- so you'll end up doing it this way and munging the
- *    patch afterwards.
+ *    patch afterwards.  The patch file goes in the project root directory,
+ *    and is only really necessary if you want the cipher to be downloaded on
+ *    demand from the ecrypt website.
  *
  * 5. Add your cipher to the ESTREAM_DATA variable in the Makefile.  This
  *    consists of 5 colon-separated fields.  First is the name of the
@@ -45,6 +47,10 @@
  *    on demand.  A minimal example is "chacha8:free:::", which assumes the
  *    contents of the chacha8 directory are already appropriately named and
  *    patched.
+ *
+ * 6. If you did do the patch thing, try moving the cipher's directory safely
+ *    away, and see what happens with "make <stem>.so".  It ought to download
+ *    a tarball, restore the directory, and apply your patches.
  *
  * This file was originally based on Python 3.1's original randommodule.c,
  * which was in turn based on Takuji Nishimura and Makoto Matsumoto's MT19937
