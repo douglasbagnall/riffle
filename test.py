@@ -36,8 +36,10 @@ DEFAULT_TEST = 'speed'
 
 FAST = [
     'dSFMT521',
+    'dSFMT1279',
+    'dSFMT2203',
+    'dSFMT216091',
     'chacha8',
-    'abc3',
     'hc_128',
     'rabbit',
     'sosemanuk2',
@@ -71,8 +73,11 @@ REALLY_SLOW = ['urandom',]
 
 TEST = ['testbits',]
 
+BAD = ['abc3', ]
+
+
 DEFAULT = FAST
-MOST = DEFAULT + SLOW
+MOST = DEFAULT + SLOW + BAD
 ALL = DEFAULT + SLOW + REALLY_SLOW + TEST
 
 #test fuctions borrowed from standard random module

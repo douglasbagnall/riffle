@@ -95,13 +95,19 @@ dSFMT/dSFMT.o: dSFMT/dSFMT.c
 dSFMT.so: dSFMT/dSFMT.o dSFMT.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-dSFMT521.o: dSFMT.c
-	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DDSFMT_MEXP=521 -o $@ $<
+#DSFMT_SIZES excludes default of 19937
+DSFMT_SIZES =  521 1279 2203 4253 11213 44497 86243 132049 216091
+DSFMT_O = $(patsubst %,dSFMT%.o,$(DSFMT_SIZES))
+DSFMT_SO = $(patsubst %,dSFMT%.so,$(DSFMT_SIZES))
+DSFMT_DSFMT_O = $(patsubst %,dSFMT/dSFMT%.o,$(DSFMT_SIZES))
 
-dSFMT/dSFMT521.o: dSFMT/dSFMT.c
-	$(CC)  $(DSFMT_FLAGS)  -MD $(ALL_CFLAGS) -DDSFMT_MEXP=521  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+$(DSFMT_O): dSFMT.c
+	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DDSFMT_MEXP=$(patsubst dSFMT%.o,%,$@) -o $@ $<
 
-dSFMT521.so: dSFMT/dSFMT521.o dSFMT521.o
+$(DSFMT_DSFMT_O): dSFMT/dSFMT.c
+	$(CC)  $(DSFMT_FLAGS)  -MD $(ALL_CFLAGS) -DDSFMT_MEXP=$(patsubst dSFMT/dSFMT%.o,%,$@) -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
+
+$(DSFMT_SO):  dSFMT%.so: dSFMT/dSFMT%.o dSFMT%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 phelix/phelix.o: phelix/phelix.c
@@ -136,6 +142,7 @@ hc128.so: hc128.o  sha1.o
 
 SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
 SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so phelix.so testbits.so
+SPECIAL_MODULES +=  dSFMT521.so dSFMT1279.so dSFMT2203.so dSFMT216091.so
 free:: $(SPECIAL_MODULES)
 all:: free
 emitters::   	bin/sosemanuk-emitter
