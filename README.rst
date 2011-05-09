@@ -188,10 +188,17 @@ symlink in the chacha8 directory, you can choose between the "ref" and
 "regs" implementations.  "regs" is default, and slightly faster.
 Bernstein also offers several optimised, non-portable, versions.
 
-**dSFMT** is Mutsuo Saito and Makoto Matsumoto's double generating,
-SIMD oriented, successor to MT19937.  The included version has been
+**dSFMT521**, **dSFMT1279**, **dSFMT2203**, **dSFMT19937**, and
+**dSFMT216091** are variations of Mutsuo Saito and Makoto Matsumoto's
+double generating, SIMD oriented, successor to MT19937.  The number
+refers to the period (and state size) of the generator, with dSFMT521
+having a period of 2 ** 521 - 1, and so on. The versions used has been
 patched by Andrea C G Mennucci to save and restore state, though this
-is not yet exposed to Python.
+is not yet exposed to Python.  It is also possible to make generators
+of sizes 4253, 11213, 44497, 86243, and 132049, using ``make dsfmt``
+for them all, or (for example) ``make dSFMT44497.so`` for one.  The
+longer periods are slightly quicker in benchmarks, but are probably
+slower in real world situations due to cache churn.
 
 **dummyc** always generates 0.5, as a speed benchmark.
 
@@ -440,7 +447,7 @@ To do
 
 * More ciphers (AES, panama, cryptmt).
 
-* Non-cipher generators.
+* Non-cipher generators. WELL, for example.
 
 * Testing.
 

@@ -44,7 +44,7 @@ OPT_OBJECTS = ccan/opt/opt.o ccan/opt/parse.o ccan/opt/helpers.o ccan/opt/usage.
 
 #set this to avoid y/N questions before downloading ecrypt modules
 #ECRYPT_NO_QUESTIONS = "no-questions"
-.PHONY: clean dist-clean really-dist-clean debug free dodgy
+.PHONY: clean dist-clean really-dist-clean debug free dodgy dsfmt
 
 clean:
 	rm -f *.so *.[oadsi] dSFMT/*.[do]
@@ -103,6 +103,8 @@ $(DSFMT_DSFMT_O): dSFMT/dSFMT.c
 
 $(DSFMT_SO):  dSFMT%.so: dSFMT/dSFMT%.o dSFMT%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+dsfmt:: $(DSFMT_SO)
 
 phelix/phelix.o: phelix/phelix.c
 	$(CC) -Iinclude -I$* -MD $(ALL_CFLAGS) -DECRYPT_API -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
