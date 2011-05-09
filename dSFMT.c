@@ -13,14 +13,9 @@
 #include "dSFMT/dSFMT.h"
 #include "random_helpers.h"
 
-#if DSFMT_MEXP == 19937
-#define MODULE_NAME dSFMT
-#else
 #define MODULE_NAME_(x) dSFMT ## x
 #define MODULE_NAME__(x) MODULE_NAME_(x)
 #define MODULE_NAME MODULE_NAME__(DSFMT_MEXP)
-#endif
-
 
 typedef struct {
     PyObject_HEAD

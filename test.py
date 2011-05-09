@@ -52,7 +52,7 @@ FAST = [
     'isaac64',
     'sosemanuk',
     'mt19937',
-    'dSFMT',
+    'dSFMT19937',
     'lcg',
     'dummyc',
     ]

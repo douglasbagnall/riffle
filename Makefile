@@ -38,7 +38,7 @@ PY_FLAGS =  -pthread -DNDEBUG  -fwrapv -Wstrict-prototypes  -I/usr/include/$(PYT
 ALL_CFLAGS = -march=native -O3 -g $(PY_FLAGS) $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DHAVE_SSE2 -I.
 
 #drop some PY_FLAGS
-EXE_CFLAGS = -march=native -O3 -g  -fwrapv -Wstrict-prototypes -fPIC $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS) -DDSFMT_MEXP=19937 -DHAVE_SSE2 -I.
+EXE_CFLAGS = -march=native -O3 -g  -fwrapv -Wstrict-prototypes -fPIC $(VECTOR_FLAGS) $(WARNINGS) -pipe  -D_GNU_SOURCE -std=gnu99 $(CFLAGS)  -DHAVE_SSE2 -I.
 
 OPT_OBJECTS = ccan/opt/opt.o ccan/opt/parse.o ccan/opt/helpers.o ccan/opt/usage.o
 
@@ -57,7 +57,7 @@ dist-clean: clean
 really-dist-clean: dist-clean
 	rm -rf $(ECRYPT_DODGY)
 .c.o:
-	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DDSFMT_MEXP=19937 -o $@ $<
+	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -o $@ $<
 
 %.so:	%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
@@ -89,14 +89,8 @@ isaac64.o isaac.o: config.h
 
 DSFMT_FLAGS =  -finline-functions -fomit-frame-pointer -DNDEBUG -fno-strict-aliasing --param max-inline-insns-single=1800  -Wmissing-prototypes  -std=c99
 
-dSFMT/dSFMT.o: dSFMT/dSFMT.c
-	$(CC)  $(DSFMT_FLAGS)  -MD $(ALL_CFLAGS) -DDSFMT_MEXP=19937   -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
-dSFMT.so: dSFMT/dSFMT.o dSFMT.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
-#DSFMT_SIZES excludes default of 19937
-DSFMT_SIZES =  521 1279 2203 4253 11213 44497 86243 132049 216091
+DSFMT_SIZES =  521 1279 2203 4253 11213 19937 44497 86243 132049 216091
 DSFMT_O = $(patsubst %,dSFMT%.o,$(DSFMT_SIZES))
 DSFMT_SO = $(patsubst %,dSFMT%.so,$(DSFMT_SIZES))
 DSFMT_DSFMT_O = $(patsubst %,dSFMT/dSFMT%.o,$(DSFMT_SIZES))
@@ -140,9 +134,9 @@ isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
 hc128.so: hc128.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-SPECIAL_MODULES = dSFMT.so sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
+SPECIAL_MODULES = sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
 SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so phelix.so testbits.so
-SPECIAL_MODULES +=  dSFMT521.so dSFMT1279.so dSFMT2203.so dSFMT216091.so
+SPECIAL_MODULES +=  dSFMT521.so dSFMT1279.so dSFMT2203.so dSFMT19937.so dSFMT216091.so
 free:: $(SPECIAL_MODULES)
 all:: free
 emitters::   	bin/sosemanuk-emitter
