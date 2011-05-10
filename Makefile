@@ -136,6 +136,9 @@ isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
 hc128.so: hc128.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
+murmur.so: murmur.o  sha1.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
 SPECIAL_MODULES = sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
 SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so phelix.so testbits.so
 SPECIAL_MODULES +=  dSFMT521.so dSFMT1279.so dSFMT2203.so dSFMT19937.so dSFMT216091.so

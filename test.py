@@ -35,6 +35,7 @@ MAX_RUNS = 999
 DEFAULT_TEST = 'speed'
 
 FAST = [
+    'murmur',
     'dSFMT521',
     'dSFMT1279',
     'dSFMT2203',
