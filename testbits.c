@@ -37,7 +37,6 @@
 
 #define MODULE_NAME testbits
 
-#define N 624
 typedef struct {
     PyObject_HEAD
     uint32_t index;

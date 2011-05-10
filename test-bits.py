@@ -6,8 +6,8 @@ from imp import reload
 C_HEADER = 'testbits.h'
 
 two12 = 2 ** 12 #4096
-two32 = 2 ** 32 #4096
-two52 = 2 ** 52 #4096
+two32 = 2 ** 32
+two52 = 2 ** 52
 
 def raw_values():
     v = (#0 based
