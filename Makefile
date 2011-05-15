@@ -130,16 +130,13 @@ bin/sosemanuk-emitter: $(SOSEMANUK_dir)/sosemanuk.o sosemanuk_emitter.c $(OPT_OB
 	mkdir -p bin
 	$(CC)  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* -Wl,-O1 -o $@ $+
 
-isaac64.so isaac.so: %.so: %.o sha1.o ccan/isaac/%.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
 hc128.so: hc128.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 murmur.so: murmur.o  sha1.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
-SPECIAL_MODULES = sosemanuk.so isaac64.so isaac.so hc128.so salsa20_8.so salsa20_12.so
+SPECIAL_MODULES = sosemanuk.so hc128.so salsa20_8.so salsa20_12.so
 SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so phelix.so testbits.so
 SPECIAL_MODULES +=  dSFMT521.so dSFMT1279.so dSFMT2203.so dSFMT19937.so dSFMT216091.so
 free:: $(SPECIAL_MODULES)
@@ -245,3 +242,28 @@ emitter-test: emitters
 $(ECRYPT_H):
 	./fetch_ecrypt.sh  $(filter $(subst /ecrypt-sync.h,,$@):%,$(ESTREAM_DATA)) $(ECRYPT_NO_QUESTIONS)
 
+
+
+############ stem :
+DIVERSE_DATA = isaac64: \
+	isaac: \
+
+DIVERSE_ROOT = $(foreach x,$(DIVERSE_DATA),$(firstword $(subst :, ,$(x))))
+DIVERSE_SO = $(DIVERSE_ROOT:=.so)
+DIVERSE_O = $(DIVERSE_ROOT:=.o)
+DIVERSE_EMITTER = $(patsubst %,bin/%-emitter,$(DIVERSE_ROOT))
+
+$(DIVERSE_O): %.o: diverse_generic.c diverse/rng-%.h
+	$(CC) -Iinclude -I$*  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
+	-DKEY_BYTES=$($*_KEY_BYTES) -DIV_BYTES=$($*_IV_BYTES) -o $@ $<
+
+$(DIVERSE_SO):  %.so: %.o sha1.o
+	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+$(DIVERSE_EMITTER): bin/%-emitter:  diverse_emitter.c diverse/rng-%.h $(OPT_OBJECTS)
+	mkdir -p bin
+	$(CC) -Iinclude  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* \
+	-DKEY_BYTES=$($*_KEY_BYTES) -DIV_BYTES=$($*_IV_BYTES)   -Wl,-O1 -o $@ $+
+
+all:: DIVERSE_SO
+emitters:: DIVERSE_EMITTER

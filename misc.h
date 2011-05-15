@@ -55,6 +55,18 @@ typedef int8_t s8;
 
 #define DSFMT_INT64_TO_DOUBLE(x) do {(x) &= DSFMT_LOW_MASK; (x) |= DSFMT_HIGH_CONST;} while (0)
 
+static inline double
+dsfmt_int64_to_double(u64 raw){
+    union{
+	u64 i;
+	double d;
+    } x;
+    x.i = raw;
+    DSFMT_INT64_TO_DOUBLE(x.i);
+    return x.d - 1.0;
+}
+
+
 #include <stdio.h>
 #define debug(format, ...) fprintf (stderr, (format),## __VA_ARGS__); fflush(stderr)
 
