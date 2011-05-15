@@ -32,36 +32,23 @@
  * out of or in connection with the software or the use or other dealings in
  * the Software.
  */
-/* Based on Python 3.1's original randommodule.c, which was in turn based on
-   Takuji Nishimura and Makoto Matsumoto's MT19937 code.  However, the parts
-   of randommodule.c that remain in this file are almost certainly not from
-   Nishimura and Matsumoto, rather they are the adaptations and boilerplate to
-   match Python's Random() interface, and were seemingly mostly written by
-   Raymond Hettinger in 2002.
-*/
 
-#include "Python.h"
-#include "random_helpers.h"
+#include "misc.h"
+#include <string.h>
 
-#define MODULE_NAME murmur
+#define SEED_BYTES (128 / 8)
+#define HASH_SIZE (128 / 8)
 
 typedef struct {
-    PyObject_HEAD
     u64 state[2];
     double numbers[2];
     unsigned int index;
     u32 key;
-} RandomObject;
-
-static PyTypeObject Random_Type;
-
-#define RandomObject_Check(v)      (Py_TYPE(v) == &Random_Type)
+} rng_context;
 
 /* Here start extracts from MurmurHash.cpp, slightly modified (gone: C++isms,
   untestable MSVC ifdefs, hash flexibility; indentation changed per python
   convention)x */
-
-#define	FORCE_INLINE __attribute__((always_inline))
 
 inline uint32_t rotl32 ( uint32_t x, int8_t r ){
     return (x << r) | (x >> (32 - r));
@@ -76,9 +63,6 @@ inline uint64_t rotl64 ( uint64_t x, int8_t r ){
 
 #define BIG_CONSTANT(x) (x##LLU)
 
-FORCE_INLINE uint64_t getblock ( const uint64_t * p, int i ){
-    return p[i];
-}
 
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
@@ -108,8 +92,8 @@ MurmurHash3_x64_128 (const u64 state[2],
     //----------
     // body is always 128 bits.
 
-    uint64_t k1 = getblock(state, 0);
-    uint64_t k2 = getblock(state, 1);
+    uint64_t k1 = state[0];
+    uint64_t k2 = state[1];
 
     k1 *= c1;
     k1 = ROTL64(k1,31);
@@ -148,53 +132,45 @@ MurmurHash3_x64_128 (const u64 state[2],
 
 /* random_random return a double in the range [0, 1).*/
 
-static PyObject *
-random_random(RandomObject *self)
+static inline double
+rng_double(rng_context *ctx)
 {
-    if (self->index == 1){
-	self->state[1]++;
-	self->index = 0;
-	MurmurHash3_x64_128(self->state, self->key, (u64 *)self->numbers);
-	doubleise_u64_buffer((u64 *)self->numbers, 2);
+    if (ctx->index == 1){
+	ctx->state[1]++;
+	ctx->index = 0;
+	MurmurHash3_x64_128(ctx->state, ctx->key, (u64 *)ctx->numbers);
+	doubleise_u64_buffer((u64 *)ctx->numbers, 2);
     }
-    double d = self->numbers[self->index];
-    self->index++;
-    return PyFloat_FromDouble(d - 1.0);
+    double d = ctx->numbers[ctx->index];
+    ctx->index++;
+    return d - 1.0;
 }
 
-static PyObject *
-random_seed(RandomObject *self, PyObject *args)
+static inline void
+rng_seed(rng_context *ctx, u8* seed, size_t len)
 {
-    PyObject *arg = NULL;
-    u64 seed[2];
-
-    if (!PyArg_UnpackTuple(args, "seed", 0, 1, &arg))
-        return NULL;
-
-    if (extract_seed(arg, (u8 *)seed, sizeof(seed)) != 0){
-	return NULL;
-    }
-    self->state[0] = seed[0];
-    self->state[1] = 0;
-    self->key = (u32)seed[1];
-    self->index = 1;
-    Py_INCREF(Py_None);
-    return Py_None;
+    u64 *seed64 = (u64*)seed;
+    ctx->state[0] = seed64[0];
+    ctx->state[1] = 0;
+    ctx->key = (u32)seed64[1];
+    ctx->index = 1;
 }
 
-RANDOM_DUMMY_STATE_SETTERS()
 
-RANDOM_CLASS_NEW()
-
-RANDOM_METHODS_STRUCT_NO_GETRANDBITS();
-
-RANDOM_CLASS_DOC(MODULE_NAME);
-
-RANDOM_OBJECT_STRUCT(MODULE_NAME);
-
-RANDOM_MODULE_DOC(MODULE_NAME);
-
-RANDOM_MODULE_STRUCT(MODULE_NAME);
-
-RANDOM_MODULE_INIT2(MODULE_NAME)
-
+static inline void
+rng_bytes(rng_context *ctx, u8 *bytes, size_t len)
+{
+    for (;;){
+	if (len < HASH_SIZE){
+	    if (len){
+		MurmurHash3_x64_128(ctx->state, ctx->key, (u64*)ctx->numbers);
+		ctx->state[1]++;
+	    }
+	    return;
+	}
+	MurmurHash3_x64_128(ctx->state, ctx->key, (u64*)bytes);
+	ctx->state[1]++;
+	bytes += HASH_SIZE;
+	len -= HASH_SIZE;
+    }
+}

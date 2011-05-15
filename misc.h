@@ -34,6 +34,14 @@
 #warning UNUSED is set
 #endif
 
+#define FORCE_INLINE inline __attribute__((always_inline))
+
+#if 0
+#define	INLINE FORCE_INLINE
+#else
+#define	INLINE inline
+#endif
+
 #include <stdint.h>
 
 #ifndef ECRYPT_PORTABLE

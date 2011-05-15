@@ -127,8 +127,6 @@ bin/sosemanuk-emitter: $(SOSEMANUK_dir)/sosemanuk.o sosemanuk_emitter.c $(OPT_OB
 	mkdir -p bin
 	$(CC)  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* -Wl,-O1 -o $@ $+
 
-murmur.so: murmur.o  sha1.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
 
 SPECIAL_MODULES = sosemanuk.so salsa20_8.so salsa20_12.so
 SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so phelix.so testbits.so
@@ -243,6 +241,7 @@ DIVERSE_DATA = isaac64: \
 	isaac: \
 	xxtea: \
 	hc128: \
+	murmur: \
 
 DIVERSE_ROOT = $(foreach x,$(DIVERSE_DATA),$(firstword $(subst :, ,$(x))))
 DIVERSE_SO = $(DIVERSE_ROOT:=.so)
