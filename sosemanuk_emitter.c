@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
 	sosemanuk_prng(&ctx, bytes, BUFFER_BYTES);
         remaining -= write(1, bytes, BUFFER_BYTES);
     }
-    if (remaining){
+    while (remaining){
 	sosemanuk_prng(&ctx, bytes, remaining);
         remaining = write(1, bytes, remaining);
     }
