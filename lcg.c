@@ -124,10 +124,11 @@ random_getrandbits(RandomObject *self, PyObject *args)
        Skip low order bits, because they're crap.*/
     for (i=0 ; i<bytes ; i+=2, k-=16) {
 	self->state = ((self->state * RAND_MUL) + RAND_ADD) & RAND_MASK;
+	r = self->state;
         if (k < 16)
             r >>= (16 - k);
-        bytearray[i+0] = (unsigned char) self->state;
-        bytearray[i+1] = (unsigned char)(self->state >> 8);
+        bytearray[i+0] = (unsigned char) r;
+        bytearray[i+1] = (unsigned char)(r >> 8);
     }
 
     /* little endian order to match bytearray assignment order */
