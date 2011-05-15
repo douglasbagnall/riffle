@@ -20,30 +20,26 @@
  * out of or in connection with the software or the use or other dealings in
  * the Software.
  */
-#include "Python.h"
-#include "random_helpers.h"
+#include "misc.h"
 #include "ccan/isaac/isaac.c"
 
 #define SEED_BYTES 20
 
-typedef struct {
-    PyObject_HEAD
-    struct isaac_ctx context;
-} RandomObject;
+typedef isaac_ctx rng_context;
 
 static inline double
-rng_double(RandomObject *self)
+rng_double(rng_context *ctx)
 {
 #if 1
-    return isaac_next_double(&self->context);
+    return isaac_next_double(ctx);
 #else
-    return dsfmt_int64_to_double(isaac_next_uint64(&self->context));
+    return dsfmt_int64_to_double(isaac_next_uint64(ctx));
 #endif
 }
 
 static inline void
-rng_seed(RandomObject *self, u8* seed, size_t len)
+rng_seed(rng_context *ctx, u8* seed, size_t len)
 {
-    isaac_init(&self->context, seed, len);
+    isaac_init(ctx, seed, len);
 }
 

@@ -49,6 +49,10 @@
 #define SEED_BYTES 4
 #endif
 
+typedef struct {
+    PyObject_HEAD
+    rng_context context;
+} RandomObject;
 
 static PyTypeObject Random_Type;
 
@@ -59,7 +63,7 @@ static PyTypeObject Random_Type;
 static PyObject *
 random_random(RandomObject *self)
 {
-    double d =  rng_double(self);
+    double d =  rng_double(&self->context);
     return PyFloat_FromDouble(d);
 }
 
@@ -76,7 +80,7 @@ random_seed(RandomObject *self, PyObject *args)
 	return NULL;
     }
 
-    rng_seed(self, seed, SEED_BYTES);
+    rng_seed(&self->context, seed, SEED_BYTES);
     Py_INCREF(Py_None);
     return Py_None;
 }

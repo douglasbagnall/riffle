@@ -1,26 +1,22 @@
-#include "Python.h"
-#include "random_helpers.h"
+#include "misc.h"
 #include "ccan/isaac/isaac64.c"
 
 #define SEED_BYTES 20
 
-typedef struct {
-    PyObject_HEAD
-    struct isaac64_ctx context;
-} RandomObject;
+typedef isaac64_ctx rng_context;
 
 static inline double
-rng_double(RandomObject *self)
+rng_double(rng_context *ctx)
 {
 #if 0
-    return isaac64_next_double(&self->context);
+    return isaac64_next_double(ctx);
 #else
-    return dsfmt_int64_to_double(isaac64_next_uint64(&self->context));
+    return dsfmt_int64_to_double(isaac64_next_uint64(ctx));
 #endif
 }
 
 static inline void
-rng_seed(RandomObject *self, u8* seed, size_t len)
+rng_seed(rng_context *ctx, u8* seed, size_t len)
 {
-    isaac64_init(&self->context, seed, len);
+    isaac64_init(ctx, seed, len);
 }
