@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
         remaining -= write(1, bytes, BUFFER_BYTES);
     }
 
-    while (remaining){
+    if (remaining){
         ECRYPT_keystream_bytes(&ctx,
                                bytes,
                                BUFFER_BYTES);
