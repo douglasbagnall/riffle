@@ -115,7 +115,7 @@ void isaac64_reseed(isaac64_ctx *_ctx,const unsigned char *_seed,int _nseed){
     uint64_t ri;
     ri=_seed[i<<3];
     for(j=1;j<_nseed;j++)ri|=(uint64_t)_seed[i<<3|j]<<(j<<3);
-    r[i++]^=ri;
+    r[i]^=ri;
   }
   x[0]=x[1]=x[2]=x[3]=x[4]=x[5]=x[6]=x[7]=(uint64_t)0x9E3779B97F4A7C13ULL;
   for(i=0;i<4;i++)isaac64_mix(x);

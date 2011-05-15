@@ -113,7 +113,7 @@ void isaac_reseed(isaac_ctx *_ctx,const unsigned char *_seed,int _nseed){
     uint32_t ri;
     ri=_seed[i<<2];
     for(j=1;j<_nseed;j++)ri|=(uint32_t)_seed[i<<2|j]<<(j<<3);
-    r[i++]^=ri;
+    r[i]^=ri;
   }
   x[0]=x[1]=x[2]=x[3]=x[4]=x[5]=x[6]=x[7]=0x9E3779B9U;
   for(i=0;i<4;i++)isaac_mix(x);
