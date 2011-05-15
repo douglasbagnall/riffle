@@ -45,9 +45,6 @@
 
 #include QUOTE(INCLUDE_NAME)
 
-#ifndef SEED_BYTES
-#define SEED_BYTES 4
-#endif
 
 typedef struct {
     PyObject_HEAD
