@@ -101,6 +101,10 @@
 #endif
 #endif
 
+#ifndef STREAM_GRANULARITY
+#define STREAM_GRANULARITY 32
+#endif
+
 #if ! KEY_BYTES + 0
 #undef KEY_BYTES
 #define KEY_BYTES (128 / 8)
@@ -246,7 +250,7 @@ random_setstate(RandomObject *self, PyObject *state)
 static PyObject *
 random_getrandbits(RandomObject *self, PyObject *args)
 {
-    int k, bytes;
+    int k, bytes, alloc_bytes;
     unsigned char *bytearray;
     PyObject *result;
 
@@ -260,7 +264,8 @@ random_getrandbits(RandomObject *self, PyObject *args)
     }
 
     bytes = ((k - 1) / 32 + 1) * 4;
-    bytearray = (unsigned char *)PyMem_Malloc(bytes);
+    alloc_bytes = (bytes + STREAM_GRANULARITY - 1) / STREAM_GRANULARITY * STREAM_GRANULARITY;
+    bytearray = (unsigned char *)PyMem_Malloc(alloc_bytes);
     if (bytearray == NULL) {
         PyErr_NoMemory();
         return NULL;
@@ -276,8 +281,8 @@ random_getrandbits(RandomObject *self, PyObject *args)
      */
     ECRYPT_keystream_bytes(&self->ctx,
 			   bytearray,
-			   bytes);
-    truncate_bitarray(bytearray, bytes, k);
+			   alloc_bytes);
+    truncate_bitarray(bytearray, alloc_bytes, k);
 
     /* overflow the index so double generator resets */
     self->index = BUFFER_DOUBLES + RESCUED_DOUBLES;
