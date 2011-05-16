@@ -26,7 +26,7 @@ rng_bytes(rng_context *ctx, u8 *bytes, size_t len)
 {
     int i = 0;
     u8 *end = bytes + len;
-    u64 *buffer32 = (u64 *)bytes;
+    u64 *buffer64 = (u64 *)bytes;
     for (;;){
 	if (len < sizeof(u64)) {
 	    if (len){
@@ -38,8 +38,8 @@ rng_bytes(rng_context *ctx, u8 *bytes, size_t len)
 	    }
 	    return;
 	}
-	buffer32[i] = isaac64_next_uint64(ctx);
+	buffer64[i] = isaac64_next_uint64(ctx);
 	i++;
-	len -= 4;
+	len -= sizeof(u64);
     }
 }
