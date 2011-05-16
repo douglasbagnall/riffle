@@ -134,20 +134,14 @@ SOSEMANUK_dir = sosemanuk-clean
 $(SOSEMANUK_dir)/sosemanuk.o: $(SOSEMANUK_dir)/sosemanuk.c
 	$(CC)  -MD $(ALL_CFLAGS)  -fvisibility=hidden  $(CPPFLAGS) -c -o $@ $<
 
-sosemanuk.so: sosemanuk.o $(SOSEMANUK_dir)/sosemanuk.o sha1.o
-	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
-
-bin/sosemanuk-emitter: $(SOSEMANUK_dir)/sosemanuk.o sosemanuk_emitter.c $(OPT_OBJECTS)
-	mkdir -p bin
-	$(CC)  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) -DMODULE_NAME=$* -Wl,-O1 -o $@ $+
+sosemanuk.so bin/sosemanuk-emitter: $(SOSEMANUK_dir)/sosemanuk.o
 
 
-SPECIAL_MODULES = sosemanuk.so salsa20_8.so salsa20_12.so
-SPECIAL_MODULES +=  mt19937module.so lcg.so dummyc.so phelix.so testbits.so
-SPECIAL_MODULES +=  dSFMT521.so dSFMT1279.so dSFMT2203.so dSFMT19937.so dSFMT216091.so
-free:: $(SPECIAL_MODULES)
+SPECIAL_MODULES = mt19937module.so lcg.so dummyc.so phelix.so testbits.so
+
+free:: $(SPECIAL_MODULES) $(DSFMT_MODULES)
 all:: free
-emitters::   	bin/sosemanuk-emitter
+emitters::   phelix_emitter
 
 ##### standard ecrypt modules
 
@@ -256,6 +250,7 @@ DIVERSE_DATA = isaac64: \
 	xxtea: \
 	hc128: \
 	murmur: \
+	sosemanuk: \
 
 DIVERSE_ROOT = $(foreach x,$(DIVERSE_DATA),$(firstword $(subst :, ,$(x))))
 DIVERSE_SO = $(DIVERSE_ROOT:=.so)
