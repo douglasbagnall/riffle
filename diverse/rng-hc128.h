@@ -70,6 +70,7 @@ rng_seed(rng_context *ctx, u8* seed, size_t len)
 static inline void
 rng_bytes(rng_context *ctx, u8 *bytes, size_t len)
 {
+    ctx->index = DOUBLES_PER_HC128; /*trigger reload on next use of doubles*/
     for (;;){
 	if (len < BYTES_PER_HC128){
 	    if (len){
