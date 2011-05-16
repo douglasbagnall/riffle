@@ -94,6 +94,15 @@ DSFMT_SIZES =  521 1279 2203 4253 11213 19937 44497 86243 132049 216091
 DSFMT_O = $(patsubst %,dSFMT%.o,$(DSFMT_SIZES))
 DSFMT_SO = $(patsubst %,dSFMT%.so,$(DSFMT_SIZES))
 DSFMT_DSFMT_O = $(patsubst %,dSFMT/dSFMT%.o,$(DSFMT_SIZES))
+DSFMT_EMITTERS = $(patsubst %,bin/dSFMT%-emitter,$(DSFMT_SIZES))
+
+#these ones get made by `make all`
+DSFMT_MAKE_ALL_SIZES =  521 1279 2203 19937 216091
+DSFMT_MODULES = $(patsubst %,dSFMT%.so,$(DSFMT_MAKE_ALL_SIZES))
+#DSFMT_MODULES =  dSFMT521.so dSFMT1279.so dSFMT2203.so dSFMT19937.so dSFMT216091.so
+DSFMT_MAKE_EMITTERS = $(patsubst %,bin/dSFMT%-emitter,$(DSFMT_MAKE_ALL_SIZES))
+
+emitters::   $(DSFMT_MAKE_EMITTERS)
 
 $(DSFMT_O): dSFMT.c
 	$(CC) -Iinclude  -c -MD $(ALL_CFLAGS) $(CPPFLAGS) -DDSFMT_MEXP=$(patsubst dSFMT%.o,%,$@) -o $@ $<
@@ -103,6 +112,11 @@ $(DSFMT_DSFMT_O): dSFMT/dSFMT.c
 
 $(DSFMT_SO):  dSFMT%.so: dSFMT/dSFMT%.o dSFMT%.o
 	$(CC) -fPIC -pthread -shared -Wl,-O1 -o $@ $+
+
+$(DSFMT_EMITTERS):  bin/dSFMT%-emitter: dSFMT/dSFMT%.o dSFMT_emitter.c $(OPT_OBJECTS)
+	mkdir -p bin
+	$(CC) -Iinclude  -Iccan/opt/ -I$*  $(EXE_CFLAGS) $(CPPFLAGS) \
+	   -DDSFMT_MEXP=$(patsubst bin/dSFMT%-emitter,%,$@)  -Wl,-O1 -o $@ $+
 
 dsfmt:: $(DSFMT_SO)
 
