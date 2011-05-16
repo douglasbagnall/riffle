@@ -180,16 +180,31 @@ void ECRYPT_keystream_bytes(ECRYPT_ctx *x,u8 *stream,u32 bytes)
 #else
 void ECRYPT_keystream_bytes(ECRYPT_ctx *x, u8 *stream, u32 bytes)
 {
+  u8 buffer[64];
+  unsigned int i;
+
   if (!bytes) return;
-  for (;bytes >= 64;) {
-    salsa20_wordtobyte(stream, x->input);
+  for (;;) {
+    if(bytes >= 64){
+      salsa20_wordtobyte(stream, x->input);
+    }
+    else {
+      salsa20_wordtobyte(buffer, x->input);
+    }
     x->input[8] = PLUSONE(x->input[8]);
     if (!x->input[8]) {
       x->input[9] = PLUSONE(x->input[9]);
       /* stopping at 2^70 bytes per nonce is user's responsibility */
     }
-    stream += 64;
+    if (bytes <= 64) {
+      if (bytes != 64){
+	for (i = 0;i < bytes;++i) stream[i] = buffer[i];
+      }
+      return;
+    }
     bytes -= 64;
+    stream += 64;
   }
 }
+
 #endif
