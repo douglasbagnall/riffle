@@ -29,6 +29,9 @@
 */
 
 #include "Python.h"
+#if ECRYPT_API
+#include "ecrypt-portable.h"
+#endif
 #include "random_helpers.h"
 
 #ifndef MODULE_NAME

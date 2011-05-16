@@ -36,7 +36,9 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <unistd.h>
-
+#if ECRYPT_API
+#include "ecrypt-portable.h"
+#endif
 #include "misc.h"
 #include "emitter.h"
 
