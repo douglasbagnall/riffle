@@ -280,7 +280,7 @@ def test_restore(module, N=None, cycles=None, seed=2):
 def test_getrandbits(module, N=None, cycles=None, seed=2):
     sizes = [x for x in (cycles, N) if x is not None]
     if not sizes:
-        sizes = [1, 2, 5, 12, 29, 43, 64, 122, 512]
+        sizes = [1, 2, 5, 7, 8, 9, 12, 29, 43, 63, 64, 65, 81, 122, 512, 700]
     m = __import__(module)
     rng = m.Random()
     r = rng.random
