@@ -85,12 +85,75 @@ random_seed(RandomObject *self, PyObject *args)
     return Py_None;
 }
 
+static PyObject *
+random_getrandbits(RandomObject *self, PyObject *args)
+{
+    int k, bytes;
+    unsigned char *bytearray;
+    PyObject *result;
 
-RANDOM_DUMMY_STATE_SETTERS()
+    if (!PyArg_ParseTuple(args, "i:getrandbits", &k))
+        return NULL;
+
+    if (k <= 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "number of bits must be greater than zero");
+        return NULL;
+    }
+
+    bytes = ((k - 1) / 32 + 1) * 4;
+    bytearray = (unsigned char *)PyMem_Malloc(bytes);
+    if (bytearray == NULL) {
+        PyErr_NoMemory();
+        return NULL;
+    }
+
+    /*The mt19937 original flipped bytes to ensure the same result on big- and
+      little- endian machines.  Not doing that here, because:
+      a) it is fiddly
+      b) it doesn't really matter (result is equally random)
+      c) it is unclear in general where the bytes should be flipped -- the original
+         was based on 32 bit words, but some of these generators are 64 bit,
+	 8 bit, or amorphous bytestreams.
+     */
+    rng_bytes(&self->context, bytearray, bytes);
+    truncate_bitarray(bytearray, bytes, k);
+
+    result = _PyLong_FromByteArray(bytearray, bytes, 1, 0);
+    PyMem_Free(bytearray);
+    return result;
+}
+
+static PyObject *
+random_getstate(RandomObject *self)
+{
+    PyObject *state;
+    char *data = (char *)&self->context;
+    Py_ssize_t size = sizeof(self->context);
+
+    state = PyByteArray_FromStringAndSize(data, size);
+    return state;
+}
+
+static PyObject *
+random_setstate(RandomObject *self, PyObject *state)
+{
+    if (!PyByteArray_Check(state) ||
+	PyByteArray_Size(state) != sizeof(self->context)){
+        return PyErr_Format(PyExc_TypeError,
+			    "state must be a byte array of size %u",
+			    sizeof(self->context));
+    }
+    char *data = PyByteArray_AsString(state);
+    memcpy(&self->context, data, sizeof(self->context));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
 
 RANDOM_CLASS_NEW()
 
-RANDOM_METHODS_STRUCT_NO_GETRANDBITS();
+RANDOM_METHODS_STRUCT();
 
 RANDOM_CLASS_DOC(MODULE_NAME);
 

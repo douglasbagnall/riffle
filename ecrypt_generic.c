@@ -176,11 +176,120 @@ random_seed(RandomObject *self, PyObject *args)
     return Py_None;
 }
 
-RANDOM_DUMMY_STATE_SETTERS()
+static PyObject *
+random_getstate(RandomObject *self)
+{
+    PyObject *state = PyTuple_New(3);
+    PyObject *ctx = PyByteArray_FromStringAndSize((char *)&self->ctx,
+						  sizeof(self->ctx));
+    PyObject *numbers = PyByteArray_FromStringAndSize((char *)&self->numbers,
+						  sizeof(self->numbers));
+    PyObject *index = PyLong_FromLong((long)self->index);
+    PyTuple_SET_ITEM(state, 0, ctx);
+    PyTuple_SET_ITEM(state, 1, numbers);
+    PyTuple_SET_ITEM(state, 2, index);
+    return state;
+}
+
+static PyObject *
+random_setstate(RandomObject *self, PyObject *state)
+{
+    if (!PyTuple_Check(state)) {
+        PyErr_SetString(PyExc_TypeError,
+            "state vector must be a tuple");
+        return NULL;
+    }
+    if (PyTuple_Size(state) != 3) {
+        PyErr_SetString(PyExc_ValueError,
+            "state vector is the wrong size");
+        return NULL;
+    }
+
+    PyObject *ctx = PyTuple_GET_ITEM(state, 0);
+    if (!PyByteArray_Check(ctx) ||
+	PyByteArray_Size(ctx) != sizeof(self->ctx)){
+        return PyErr_Format(PyExc_ValueError,
+			    "state[0] must be a byte array of size %u",
+			    sizeof(self->ctx));
+    }
+
+    PyObject *numbers = PyTuple_GET_ITEM(state, 1);
+    if (!PyByteArray_Check(numbers) ||
+	PyByteArray_Size(numbers) != sizeof(self->numbers)){
+        return PyErr_Format(PyExc_ValueError,
+			    "state[1] must be a byte array of size %u",
+			    sizeof(self->numbers));
+    }
+
+    PyObject *index = PyTuple_GET_ITEM(state, 2);
+    if (!PyLong_Check(index)){
+        return PyErr_Format(PyExc_TypeError,
+			    "state[2] must be a positive integer less than %u",
+			    (sizeof(self->numbers) / sizeof(self->numbers[0])));
+    }
+    unsigned long idx = PyLong_AsUnsignedLong(index);
+    if (idx > (sizeof(self->numbers) / sizeof(self->numbers[0]))){
+        return PyErr_Format(PyExc_ValueError,
+			    "state[2] must be a positive integer less than %u",
+			    (sizeof(self->numbers) / sizeof(self->numbers[0])));
+    }
+
+    memcpy(&self->ctx, PyByteArray_AsString(ctx), sizeof(self->ctx));
+    memcpy(&self->numbers, PyByteArray_AsString(numbers), sizeof(self->numbers));
+    self->index = idx;
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+
+static PyObject *
+random_getrandbits(RandomObject *self, PyObject *args)
+{
+    int k, bytes;
+    unsigned char *bytearray;
+    PyObject *result;
+
+    if (!PyArg_ParseTuple(args, "i:getrandbits", &k))
+        return NULL;
+
+    if (k <= 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "number of bits must be greater than zero");
+        return NULL;
+    }
+
+    bytes = ((k - 1) / 32 + 1) * 4;
+    bytearray = (unsigned char *)PyMem_Malloc(bytes);
+    if (bytearray == NULL) {
+        PyErr_NoMemory();
+        return NULL;
+    }
+
+    /*The mt19937 original flipped bytes to ensure the same result on big- and
+      little- endian machines.  Not doing that here, because:
+      a) it is fiddly
+      b) it doesn't really matter (result is equally random)
+      c) it is unclear in general where the bytes should be flipped -- the original
+         was based on 32 bit words, but some of these generators are 64 bit,
+	 8 bit, or amorphous bytestreams.
+     */
+    ECRYPT_keystream_bytes(&self->ctx,
+			   bytearray,
+			   bytes);
+    truncate_bitarray(bytearray, bytes, k);
+
+    /* overflow the index so double generator resets */
+    self->index = BUFFER_DOUBLES + RESCUED_DOUBLES;
+
+    result = _PyLong_FromByteArray(bytearray, bytes, 1, 0);
+    PyMem_Free(bytearray);
+    return result;
+}
 
 RANDOM_CLASS_NEW()
 
-RANDOM_METHODS_STRUCT_NO_GETRANDBITS();
+RANDOM_METHODS_STRUCT();
 
 RANDOM_CLASS_DOC(MODULE_NAME);
 

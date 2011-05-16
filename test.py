@@ -29,6 +29,7 @@
 import sys
 from math import sqrt
 import time
+import traceback
 
 NORMALISED_N = 1e7
 MAX_RUNS = 999
@@ -246,6 +247,72 @@ def test_print(module, N=None, cycles=None, seed=2):
     rng.seed(seed)
     for x in range(N):
         print (r(), end=' ')
+    print()
+
+def test_restore(module, N=None, cycles=None, seed=2):
+    if N is None:
+        if cycles is not None:
+            N = cycles
+        else:
+            N = 20
+    m = __import__(module)
+    rng = m.Random()
+    r = rng.random
+    rng.seed(seed)
+    #run away from initial state
+    for x in range(999):
+        r()
+    print(module)
+    try:
+        state = rng.getstate()
+        first = [r() for x in range(N)]
+        rng.setstate(state)
+    except Exception as e:
+        print(e)
+        return
+    second = [r() for x in range(N)]
+    if first != second:
+        print(first, second, len(state))
+    else:
+        print("Good!")
+    print()
+
+
+def test_getrandbits(module, N=None, cycles=None, seed=2):
+    sizes = [x for x in (cycles, N) if x is not None]
+    if not sizes:
+        sizes = [1, 2, 5, 12, 29, 43, 64, 122, 512]
+    m = __import__(module)
+    rng = m.Random()
+    r = rng.random
+    rng.seed(seed)
+    #run away from initial state
+    for x in range(2999):
+        r()
+    print(module)
+    from math import log
+    failed = False
+    deltas = []
+    try:
+        for s in sizes:
+            b = rng.getrandbits(s)
+            if b:
+                s2 = log(b, 2)
+            else:
+                s2 = -1e999
+            d = s - (int(max(-1, s2)) + 1)
+            deltas.append(d)
+            if s2 > s:
+                failed = True
+                print("%s %0.2f ***FAILED***" % (s, s2))
+            else:
+                print("%s %0.2f" % (s, s2))
+    except Exception as e:
+        print(e)
+        return
+    if not failed:
+        print(sorted(deltas))
+        print("Good!")
     print()
 
 

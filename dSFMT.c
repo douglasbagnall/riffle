@@ -158,8 +158,6 @@ Done:
     return result;
 }
 
-RANDOM_DUMMY_STATE_SETTERS()
-
 static PyObject *
 random_getrandbits(RandomObject *self, PyObject *args)
 {
@@ -200,6 +198,34 @@ random_getrandbits(RandomObject *self, PyObject *args)
     PyMem_Free(bytearray);
     return result;
 }
+
+static PyObject *
+random_getstate(RandomObject *self)
+{
+    PyObject *state;
+    char *data = (char *)&self->dsfmt;
+    Py_ssize_t size = sizeof(self->dsfmt);
+
+    state = PyByteArray_FromStringAndSize(data, size);
+    return state;
+}
+
+static PyObject *
+random_setstate(RandomObject *self, PyObject *state)
+{
+    if (!PyByteArray_Check(state) ||
+	PyByteArray_Size(state) != sizeof(self->dsfmt)){
+        return PyErr_Format(PyExc_TypeError,
+			    "state must be a byte array of size %u",
+			    sizeof(self->dsfmt));
+    }
+    char *data = PyByteArray_AsString(state);
+    memcpy(&self->dsfmt, data, sizeof(self->dsfmt));
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 
 RANDOM_CLASS_NEW()
 

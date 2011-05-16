@@ -263,5 +263,31 @@ PyInit_ ## name  (void) \
 #define RANDOM_MODULE_INIT2_ECRYPT(name) RANDOM_MODULE_INIT_ECRYPT(name)
 
 
+/*used in random_getrandbits:
+  zero out the last few bits of a random array.
+  data is of size <bytes> (a multiple of 4).
+  <bits> is <= 8 * <bytes>.  All bits beyond this bit are zeroed.
+
+  The slightly tricky thing is <bits> is 1 based, while bit manipulation is 0
+  based.
+ */
+static inline void
+truncate_bitarray(u8* data, u32 bytes, u32 bits){
+    if (bits == 0){
+	memset(data, 0, bytes);
+	return;
+    }
+    u32 last_byte = (bits - 1) / 8;
+    u32 last_bit = (bits - 1) % 8;
+    u8 mask = 0xff >> (7 - last_bit);
+    //debug("bytes %u, bits %u, last_byte %u, last_bit %u, mask %x\n",
+    //bytes, bits, last_byte, last_bit, mask);
+    u32 i;
+    for (i = last_byte + 1; i < bytes; i++){
+	data[i] = 0;
+	//debug("nuking byte %u\n", i);
+    }
+    data[last_byte] &= mask;
+}
 
 #endif
