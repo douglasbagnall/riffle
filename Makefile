@@ -243,7 +243,6 @@ DIVERSE_DATA = isaac64: \
 	isaac: \
 	xxtea: \
 	hc128: \
-	murmur: \
 	sosemanuk: \
 	phelix: \
 	lcg: \
