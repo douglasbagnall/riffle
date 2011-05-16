@@ -40,23 +40,22 @@ rng_double(rng_context *ctx)
 static inline void
 rng_bytes(rng_context *ctx, u8 *bytes, size_t len)
 {
-    int i = 0;
-    u8 *end = bytes + len;
     u32 *buffer32 = (u32 *)bytes;
     for (;;){
 	if (len < sizeof(u32)) {
 	    if (len){
 		u32 r = isaac_next_uint32(ctx);
 		u8 *rb = (u8 *)&r;
-		while(len){
-		    end[-len] = rb[-len];
-		    len--;
+		u8* last = (u8 *)buffer32;
+		uint i = 0;
+		for (i = 0; i < len; i++){
+		    last[i] = rb[i];
 		}
 	    }
 	    return;
 	}
-	buffer32[i] = isaac_next_uint32(ctx);
-	i++;
+	*buffer32 = isaac_next_uint32(ctx);
+	buffer32++;
 	len -= 4;
     }
 }
