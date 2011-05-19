@@ -314,8 +314,7 @@ Python API
 
 The Python module code is based on Python's standard ``_random``
 module (the secret C module behind the public ``random`` module), and
-uses the Random class API as officially documented_, with omissions.
-The full API is described in this paragraph:
+uses the Random class API as documented_:
 
 .. _documented: http://docs.python.org/py3k/library/random.html
 
@@ -325,10 +324,6 @@ The full API is described in this paragraph:
   ``setstate()`` methods. Optionally, a new generator can supply a
   ``getrandbits()`` method -- this allows randrange() to produce
   selections over an arbitrarily large range.
-
-Most of the modules here omit the optional ``getrandbits()``, and have
-stub ``getstate()`` and ``setstate()`` methods that raise exceptions
-rather than save or restore state (none of this would be hard to fix).
 
 Testing
 =======
@@ -450,7 +445,3 @@ To do
 * Non-cipher generators. WELL, for example.
 
 * Testing.
-
-* Add gen_rand_bits and state storage and retrieval to Python modules.
-
-* Consolidate non-ecrypt generators a bit.
